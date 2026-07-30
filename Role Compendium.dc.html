@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://www.smogon.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  a { color: #cf3a22; text-decoration: none; }
+  a:hover { color: #a52c17; }
+  ::selection { background: #cf3a22; color: #f1ece1; }
+  ::-webkit-scrollbar { width: 12px; height: 12px; }
+  ::-webkit-scrollbar-track { background: #e6dece; }
+  ::-webkit-scrollbar-thumb { background: #c3b8a2; border: 3px solid #e6dece; }
+  ::-webkit-scrollbar-thumb:hover { background: #a79c85; }
+  @keyframes drawerIn { from { transform: translateX(24px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #f1ece1; color: #1b1917; font-family: 'Space Grotesk', system-ui, sans-serif; padding-bottom: 90px;">
+
+  <sc-if value="{{ editMode }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: #cf3a22; color: #f1ece1; border-top: 1.5px solid #1b1917;">
+      <div style="max-width: 1180px; margin: 0 auto; padding: 12px 40px; display: flex; align-items: center; gap: 14px; font-family: 'Space Mono', monospace; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase;">
+        <span>Edit mode — {{ pendingCount }} pending change(s)</span>
+        <span style="flex: 1;"></span>
+        <button onClick="{{ discardClick }}" style="background: none; border: 1.5px solid #f1ece1; color: #f1ece1; padding: 6px 14px; font-family: inherit; font-size: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer;" style-hover="background: #f1ece1; color: #cf3a22;">Discard all</button>
+        <button onClick="{{ exportClick }}" style="background: #1b1917; border: 1.5px solid #1b1917; color: #f1ece1; padding: 6px 14px; font-family: inherit; font-size: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer;" style-hover="background: #f1ece1; color: #1b1917;">Export</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <datalist id="mon-names">
+    <sc-for list="{{ monNames }}" as="mn" hint-placeholder-count="4">
+      <option value="{{ mn }}"></option>
+    </sc-for>
+  </datalist>
+
+  <div style="max-width: 1180px; margin: 0 auto; padding: 30px 40px 24px;">
+    <div style="display: flex; align-items: center; gap: 14px; font-family: 'Space Mono', monospace; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; color: #7a7263;">
+      <span>Pokémon Revolution Online</span>
+      <span style="flex: 1; height: 1px; background: #cdc3af;"></span>
+      <span style="color: #cf3a22;">Ranked</span>
+      <span style="width: 1px; height: 12px; background: #cdc3af;"></span>
+      <span>2026 Edition</span>
+    </div>
+    <h1 style="margin: 18px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(44px, 8vw, 92px); line-height: .92; letter-spacing: -.03em; text-wrap: balance;">Role Compendium</h1>
+    <p style="margin: 16px 0 0; max-width: 560px; font-size: 16px; line-height: 1.5; color: #4a453d;">A census of the metagame's roles — who sets hazards, who sets up, who walls what. Search a Pokémon or browse by function.</p>
+  </div>
+
+  <div style="position: sticky; top: 0; z-index: 30; background: #f1ece1; border-top: 1.5px solid #1b1917; border-bottom: 1px solid #cdc3af;">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 0 40px; display: flex; align-items: stretch; gap: 28px; flex-wrap: wrap;">
+      <nav style="flex: 1; min-width: 280px; display: flex; gap: 22px; flex-wrap: wrap; align-items: center; padding: 12px 0;">
+        <sc-for list="{{ cats }}" as="cat" hint-placeholder-count="7">
+          <button onClick="{{ cat.onClick }}" style="{{ cat.style }}" style-hover="color: #1b1917;">{{ cat.title }}</button>
+        </sc-for>
+      </nav>
+      <div style="display: flex; align-items: center; gap: 18px; padding: 10px 0;">
+        <div style="position: relative; display: flex; align-items: center; border-bottom: 1.5px solid #1b1917;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1b1917" stroke-width="2.4" style="flex-shrink: 0;"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+          <input value="{{ q }}" onInput="{{ setQuery }}" placeholder="Search a Pokémon" spellcheck="false" style="width: 176px; background: transparent; border: none; color: #1b1917; font-size: 14px; font-family: 'Space Mono', monospace; padding: 8px 4px 8px 9px; outline: none;">
+        </div>
+        <div style="font-family: 'Space Mono', monospace; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; color: #cf3a22; white-space: nowrap; min-width: 92px; text-align: right;">{{ statLine }}</div>
+      </div>
+    </div>
+  </div>
+
+  <main style="max-width: 1180px; margin: 0 auto; padding: 4px 40px 0;">
+    <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="4">
+      <section style="padding: 40px 0 8px; border-bottom: 1px solid #cdc3af;">
+        <div style="display: flex; align-items: flex-end; gap: 18px; margin-bottom: 26px;">
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 30px; line-height: 1; color: #cf3a22; letter-spacing: -.02em;">{{ sec.num }}</span>
+          <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 32px; line-height: .95; letter-spacing: -.025em;">{{ sec.title }}</h2>
+          <span style="flex: 1; height: 1px; background: #cdc3af; margin-bottom: 7px;"></span>
+          <span style="font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #7a7263; margin-bottom: 3px; white-space: nowrap;">{{ sec.sub }}</span>
+        </div>
+        <sc-for list="{{ sec.roles }}" as="role" hint-placeholder-count="4">
+          <div style="margin: 0 0 26px;">
+            <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 9px; margin-bottom: 12px; border-bottom: 1.5px solid #1b1917;">
+              <h3 style="margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -.01em;">{{ role.name }}</h3>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 7px;">
+              <sc-for list="{{ role.mons }}" as="mon" hint-placeholder-count="6">
+                <div onClick="{{ mon.onClick }}" role="button" tabindex="0" title="{{ mon.name }}" style="{{ mon.tileStyle }}" style-hover="transform: translateY(-3px); border-color: #cf3a22; background: #fff;">
+                  <sc-if value="{{ mon.editMode }}" hint-placeholder-val="{{ false }}">
+                    <button onClick="{{ mon.removeClick }}" title="Remove" style="position: absolute; top: -7px; right: -7px; width: 18px; height: 18px; border-radius: 50%; background: #cf3a22; color: #f1ece1; border: 1.5px solid #f1ece1; font-family: 'Space Mono', monospace; font-size: 10px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;" style-hover="background: #a52c17;">✕</button>
+                  </sc-if>
+                  <img data-url="{{ mon.url }}" onLoad="{{ onImgLoad }}" onError="{{ onImgError }}" alt="{{ mon.name }}" style="width: 50px; height: 50px; object-fit: contain; image-rendering: pixelated;">
+                  <span style="font-family: 'Space Mono', monospace; font-size: 8px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: #7a7263; max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1;">{{ mon.name }}</span>
+                  <sc-if value="{{ mon.note }}" hint-placeholder-val="">
+                    <span style="font-family: 'Space Mono', monospace; font-size: 7.5px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; color: #cf3a22; max-width: 66px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1;">{{ mon.note }}</span>
+                  </sc-if>
+                </div>
+              </sc-for>
+              <sc-if value="{{ role.editMode }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ role.addOpenClick }}" title="Add Pokémon" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 72px; height: 83px; background: transparent; border: 1.5px dashed #b8ae9c; color: #7a7263; cursor: pointer; font-family: inherit; font-size: 22px; padding: 0;" style-hover="border-color: #cf3a22; color: #cf3a22;">+</button>
+              </sc-if>
+            </div>
+            <sc-if value="{{ role.isAdding }}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; padding: 10px; background: #f7f3ea; border: 1px solid #ded6c6;">
+                <input list="mon-names" value="{{ role.addName }}" onInput="{{ role.setAddName }}" onKeyDown="{{ role.addKeyDown }}" placeholder="Pokémon name" spellcheck="false" style="flex: 1; min-width: 140px; background: #fff; border: 1px solid #ded6c6; padding: 7px 9px; font-family: 'Space Mono', monospace; font-size: 12px; outline: none;">
+                <input value="{{ role.addNote }}" onInput="{{ role.setAddNote }}" onKeyDown="{{ role.addKeyDown }}" placeholder="Note (optional)" spellcheck="false" style="flex: 1; min-width: 140px; background: #fff; border: 1px solid #ded6c6; padding: 7px 9px; font-family: 'Space Mono', monospace; font-size: 12px; outline: none;">
+                <button onClick="{{ role.addConfirmClick }}" style="background: #cf3a22; color: #f1ece1; border: none; padding: 8px 16px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="background: #a52c17;">Add</button>
+                <button onClick="{{ role.addCancelClick }}" style="background: none; border: 1px solid #ded6c6; color: #7a7263; padding: 8px 16px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="border-color: #1b1917; color: #1b1917;">Done</button>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </section>
+    </sc-for>
+
+    <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+      <div style="padding: 90px 20px; text-align: center;">
+        <p style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px; margin: 0 0 6px; letter-spacing: -.02em;">Nothing found</p>
+        <p style="font-family: 'Space Mono', monospace; font-size: 13px; color: #7a7263; margin: 0;">No Pokémon matches "{{ q }}"</p>
+      </div>
+    </sc-if>
+  </main>
+
+  <sc-if value="{{ selected }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeDetail }}" style="position: fixed; inset: 0; z-index: 40; background: rgba(27,25,23,.34);"></div>
+    <aside style="position: fixed; top: 0; right: 0; bottom: 0; z-index: 41; width: 400px; max-width: 92vw; background: #f1ece1; border-left: 1.5px solid #1b1917; box-shadow: -30px 0 60px rgba(27,25,23,.18); overflow-y: auto; animation: drawerIn .22s ease;">
+      <div style="position: relative; padding: 26px 28px 24px; border-bottom: 1.5px solid #1b1917;">
+        <button onClick="{{ closeDetail }}" style="position: absolute; top: 22px; right: 24px; width: 32px; height: 32px; background: none; border: 1.5px solid #1b1917; color: #1b1917; font-family: 'Space Mono', monospace; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;" style-hover="background: #cf3a22; border-color: #cf3a22; color: #f1ece1;">✕</button>
+        <div style="font-family: 'Space Mono', monospace; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: #cf3a22; margin-bottom: 14px;">Role sheet</div>
+        <div style="display: flex; align-items: center; gap: 18px;">
+          <div style="width: 96px; height: 84px; background: #f7f3ea; border: 1px solid #ded6c6; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <img data-url="{{ selected.url }}" onLoad="{{ onImgLoad }}" onError="{{ onImgError }}" alt="{{ selected.name }}" style="width: 76px; height: 76px; object-fit: contain; image-rendering: pixelated;">
+          </div>
+          <div>
+            <h2 style="margin: 0 0 6px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 27px; line-height: .95; letter-spacing: -.025em;">{{ selected.name }}</h2>
+            <span style="font-family: 'Space Mono', monospace; font-size: 11px; color: #7a7263;">{{ selected.roleCount }}</span>
+          </div>
+        </div>
+      </div>
+      <div style="padding: 24px 28px 44px;">
+        <sc-for list="{{ selected.groups }}" as="grp" hint-placeholder-count="3">
+          <div style="margin-bottom: 22px;">
+            <div style="font-family: 'Space Mono', monospace; font-size: 10.5px; font-weight: 700; letter-spacing: .12em; color: #1b1917; margin-bottom: 11px; padding-bottom: 6px; border-bottom: 1px solid #cdc3af;">{{ grp.title }}</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 7px;">
+              <sc-for list="{{ grp.roles }}" as="r" hint-placeholder-count="2">
+                <span style="font-size: 13px; font-weight: 500; color: #1b1917; background: #f7f3ea; border: 1px solid #ded6c6; padding: 5px 11px;">{{ r }}</span>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </aside>
+  </sc-if>
+
+  <sc-if value="{{ exportOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeExport }}" style="position: fixed; inset: 0; z-index: 40; background: rgba(27,25,23,.34);"></div>
+    <aside style="position: fixed; top: 0; right: 0; bottom: 0; z-index: 41; width: 460px; max-width: 92vw; background: #f1ece1; border-left: 1.5px solid #1b1917; box-shadow: -30px 0 60px rgba(27,25,23,.18); overflow-y: auto; animation: drawerIn .22s ease;">
+      <div style="position: relative; padding: 26px 28px 24px; border-bottom: 1.5px solid #1b1917;">
+        <button onClick="{{ closeExport }}" style="position: absolute; top: 22px; right: 24px; width: 32px; height: 32px; background: none; border: 1.5px solid #1b1917; color: #1b1917; font-family: 'Space Mono', monospace; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;" style-hover="background: #cf3a22; border-color: #cf3a22; color: #f1ece1;">✕</button>
+        <div style="font-family: 'Space Mono', monospace; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: #cf3a22; margin-bottom: 14px;">Export changes</div>
+        <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 24px; line-height: .95; letter-spacing: -.02em;">{{ pendingCount }} pending change(s)</h2>
+      </div>
+      <div style="padding: 24px 28px 44px; display: flex; flex-direction: column; gap: 16px;">
+        <textarea readonly style="width: 100%; min-height: 200px; background: #f7f3ea; border: 1px solid #ded6c6; padding: 10px; font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.6; resize: vertical;">{{ changelog }}</textarea>
+        <button onClick="{{ copyChangelogClick }}" style="background: none; border: 1.5px solid #1b1917; color: #1b1917; padding: 11px; font-family: 'Space Mono', monospace; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="background: #1b1917; color: #f1ece1;">Copy changelog</button>
+        <button onClick="{{ copyFileClick }}" style="background: #cf3a22; border: none; color: #f1ece1; padding: 11px; font-family: 'Space Mono', monospace; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="background: #a52c17;">Copy updated roles-data.js</button>
+        <p style="margin: 0; font-size: 12px; color: #7a7263; line-height: 1.5;">Send both to whoever maintains the site — they'll paste the second one over roles-data.js and commit.</p>
+      </div>
+    </aside>
+  </sc-if>
+
+  <footer style="max-width: 1180px; margin: 34px auto 0; padding: 0 40px; font-family: 'Space Mono', monospace; color: #7a7263; font-size: 11.5px; line-height: 1.7; letter-spacing: .02em;">
+    Adapted from Smogon's SM OU Role Compendium, filtered for PRO availability — adjust the lists as the metagame shifts. Sprites from Smogon's Mystery Dungeon set. Click a Pokémon to see every role it fills.
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:900}}">
+const EDIT_STORAGE_KEY = "pro-roles-pending-edits";
+
+class Component extends DCLogic {
+  // Os dados (Pokémon, funções, slugs de sprite) ficam em roles-data.js.
+  // editMode/pendingEdits: modo de edição local (?edit=1) — mudanças ficam só
+  // no navegador (localStorage) até alguém exportar e aplicar no arquivo.
+  state = {
+    q: "", cat: "all", selected: null, sections: [], slugs: {}, base: "",
+    editMode: false, pendingEdits: [], addingKey: null, addName: "", addNote: "",
+    exportOpen: false, rawSource: null,
+  };
+
+  slugFor(name) {
+    if (this.state.slugs[name]) return this.state.slugs[name];
+    return name.toLowerCase().replace(/[.'’: ]/g, "").replace(/[^a-z0-9-]/g, "");
+  }
+  url(name) { return this.state.base + this.slugFor(name) + ".png"; }
+
+  // Aplica pendingEdits por cima do dado base (só quando editMode está ligado —
+  // um visitante comum nunca deve ver rascunhos de uma sessão de edição anterior).
+  data() {
+    const base = this.state.sections;
+    const pending = this.state.pendingEdits;
+    if (!this.state.editMode || !pending.length) return base;
+    return base.map(sec => ({
+      ...sec,
+      roles: sec.roles.map(role => {
+        const key = sec.id + "|" + role.name;
+        const removes = new Set(
+          pending.filter(e => e.type === "remove" && (e.sectionId + "|" + e.roleName) === key).map(e => e.name)
+        );
+        const adds = pending.filter(e => e.type === "add" && (e.sectionId + "|" + e.roleName) === key);
+        if (!removes.size && !adds.length) return role;
+        const mons = role.mons
+          .filter(m => !removes.has(this.monName(m)))
+          .concat(adds.map(e => ({ name: e.name, note: e.note || "" })));
+        return { ...role, mons };
+      }),
+    }));
+  }
+
+  // Cada entrada de "mons" pode ser "Nome" ou { name, note }.
+  monName(m) { return typeof m === "string" ? m : m.name; }
+  monNote(m) { return typeof m === "string" ? "" : (m.note || ""); }
+
+  allMonNames() {
+    const set = new Set();
+    for (const sec of this.state.sections) for (const role of sec.roles) for (const m of role.mons) set.add(this.monName(m));
+    return [...set].sort();
+  }
+
+  // "mega lopunny" digitado precisa virar "Mega Lopunny" — SPRITE_SLUGS e o
+  // sprite fallback (slugFor) são case-sensitive, então qualquer diferença de
+  // maiúscula/minúscula faz o sprite certo nunca ser encontrado.
+  canonicalMonName(name) {
+    const lower = name.toLowerCase();
+    for (const n of this.allMonNames()) if (n.toLowerCase() === lower) return n;
+    for (const n of Object.keys(this.state.slugs)) if (n.toLowerCase() === lower) return n;
+    return name;
+  }
+
+  savePending(list) {
+    this.setState({ pendingEdits: list });
+    localStorage.setItem(EDIT_STORAGE_KEY, JSON.stringify(list));
+  }
+
+  // Não fecha o formulário depois de adicionar — deixa o campo pronto pra
+  // digitar o próximo nome e apertar Enter de novo (bulk add sem reabrir o "+").
+  addMon(sectionId, roleName, name, note) {
+    name = (name || "").trim();
+    if (!name) return;
+    name = this.canonicalMonName(name);
+    const role = this.data().find(s => s.id === sectionId)?.roles.find(r => r.name === roleName);
+    const exists = role && role.mons.some(m => this.monName(m).toLowerCase() === name.toLowerCase());
+    if (exists) { this.setState({ addName: "", addNote: "" }); return; }
+    this.savePending([...this.state.pendingEdits, { type: "add", sectionId, roleName, name, note: (note || "").trim() }]);
+    this.setState({ addName: "", addNote: "" });
+  }
+
+  removeMon(sectionId, roleName, name, isPendingAdd) {
+    const pending = this.state.pendingEdits;
+    if (isPendingAdd) {
+      this.savePending(pending.filter(e => !(e.type === "add" && e.sectionId === sectionId && e.roleName === roleName && e.name === name)));
+    } else {
+      this.savePending([...pending, { type: "remove", sectionId, roleName, name }]);
+    }
+  }
+
+  discardAll() {
+    if (!this.state.pendingEdits.length) return;
+    if (!confirm("Discard all " + this.state.pendingEdits.length + " pending change(s)?")) return;
+    this.savePending([]);
+  }
+
+  buildChangelog() {
+    if (!this.state.pendingEdits.length) return "No pending changes.";
+    const titleFor = (sectionId) => (this.state.sections.find(s => s.id === sectionId) || {}).title || sectionId;
+    return this.state.pendingEdits.map(e => {
+      const sign = e.type === "add" ? "+" : "-";
+      const label = e.note ? `${e.name} (${e.note})` : e.name;
+      return `${sign} ${label} → ${e.roleName} (${titleFor(e.sectionId)})`;
+    }).join("\n");
+  }
+
+  serializeMon(m) {
+    if (typeof m === "string") return JSON.stringify(m);
+    return m.note ? `{ name: ${JSON.stringify(m.name)}, note: ${JSON.stringify(m.note)} }` : JSON.stringify(m.name);
+  }
+  serializeRole(r) {
+    const mons = r.mons.map(m => this.serializeMon(m)).join(", ");
+    return `    { name: ${JSON.stringify(r.name)}, move: ${JSON.stringify(r.move)}, mons: [${mons}] },`;
+  }
+  serializeSection(s) {
+    const roles = s.roles.map(r => this.serializeRole(r)).join("\n");
+    return `  { id: ${JSON.stringify(s.id)}, title: ${JSON.stringify(s.title)}, tag: ${JSON.stringify(s.tag)}, roles: [\n${roles}\n  ] },`;
+  }
+  serializeSections(sections) {
+    return "export const SECTIONS = [\n" + sections.map(s => this.serializeSection(s)).join("\n\n") + "\n];";
+  }
+
+  async copyChangelog() {
+    await navigator.clipboard.writeText(this.buildChangelog());
+    alert("Changelog copied!");
+  }
+
+  async copyUpdatedFile() {
+    let raw = this.state.rawSource;
+    if (!raw) {
+      raw = await fetch("./roles-data.js").then(r => r.text());
+      this.setState({ rawSource: raw });
+    }
+    const startMarker = "export const SECTIONS = [";
+    const startIdx = raw.indexOf(startMarker);
+    const endIdx = raw.indexOf("\n];", startIdx) + 3;
+    const updated = raw.slice(0, startIdx) + this.serializeSections(this.data()) + raw.slice(endIdx);
+    await navigator.clipboard.writeText(updated);
+    // Se as pendências continuarem salvas depois que o arquivo for aplicado, a
+    // próxima sessão de edição reaplica tudo de novo em cima do arquivo já
+    // atualizado → Pokémon duplicado. Por isso perguntamos aqui, no momento em
+    // que o "resultado final" é gerado, em vez de exigir lembrar de clicar em
+    // "Discard all" depois.
+    if (confirm("roles-data.js copied! Paste it over the file and commit it.\n\nOnce that's done, click OK to clear your pending changes here (so they don't get added again next time you edit). Click Cancel to keep them staged for now.")) {
+      this.savePending([]);
+    }
+  }
+
+  monRoleMap() {
+    const map = {};
+    for (const sec of this.data()) {
+      for (const role of sec.roles) {
+        for (const entry of role.mons) {
+          const name = this.monName(entry), note = this.monNote(entry);
+          if (!map[name]) map[name] = {};
+          if (!map[name][sec.id]) map[name][sec.id] = { title: sec.title, roles: [] };
+          const list = map[name][sec.id].roles;
+          if (!list.some(x => x.role === role.name)) list.push({ role: role.name, note });
+        }
+      }
+    }
+    return map;
+  }
+
+  tileStyle(dim) {
+    return "position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;width:72px;padding:9px 4px 8px;background:#f7f3ea;border:1px solid #ded6c6;cursor:pointer;transition:transform .14s ease,border-color .14s,background .14s,opacity .18s;font-family:inherit;" +
+      (dim ? "opacity:.16;pointer-events:none;" : "");
+  }
+  chipStyle(active) {
+    return "font-family:'Space Mono',monospace;font-size:12px;font-weight:" + (active ? "700" : "400") +
+      ";letter-spacing:.04em;text-transform:uppercase;padding:5px 1px;background:none;border:none;border-bottom:2px solid " +
+      (active ? "#cf3a22" : "transparent") + ";cursor:pointer;transition:color .12s,border-color .12s;color:" +
+      (active ? "#cf3a22" : "#7a7263") + ";";
+  }
+
+  renderVals() {
+    const q = this.state.q.trim().toLowerCase();
+    const cat = this.state.cat;
+    const all = this.data();
+    const editMode = this.state.editMode;
+    const pending = this.state.pendingEdits;
+
+    const cats = [{ id:"all", title:"All" }, ...all.map(s => ({ id: s.id, title: s.title }))].map(c => ({
+      title: c.title,
+      style: this.chipStyle(cat === c.id),
+      onClick: () => this.setState({ cat: c.id }),
+    }));
+
+    let totalShown = 0;
+    const sections = all
+      .map((s, i) => {
+        let secHasMatch = false;
+        const roles = s.roles.map(r => {
+          const roleKey = s.id + "|" + r.name;
+          const mons = r.mons.map(entry => {
+            const name = this.monName(entry), note = this.monNote(entry);
+            const dim = q && !name.toLowerCase().includes(q);
+            if (!dim) { secHasMatch = true; totalShown++; }
+            const isPendingAdd = editMode && pending.some(e => e.type === "add" && e.sectionId === s.id && e.roleName === r.name && e.name === name);
+            return {
+              name, note, url: this.url(name), dim,
+              tileStyle: this.tileStyle(dim),
+              onClick: () => this.openMon(name),
+              editMode, isPendingAdd,
+              removeClick: (e) => { e.stopPropagation(); this.removeMon(s.id, r.name, name, isPendingAdd); },
+            };
+          });
+          return {
+            name: r.name, move: r.move, mons,
+            editMode, isAdding: editMode && this.state.addingKey === roleKey,
+            addOpenClick: () => this.setState({ addingKey: roleKey, addName: "", addNote: "" }),
+            addCancelClick: () => this.setState({ addingKey: null, addName: "", addNote: "" }),
+            addConfirmClick: () => this.addMon(s.id, r.name, this.state.addName, this.state.addNote),
+            addKeyDown: (e) => { if (e.key === "Enter") { e.preventDefault(); this.addMon(s.id, r.name, this.state.addName, this.state.addNote); } },
+            addName: this.state.addName,
+            setAddName: (e) => this.setState({ addName: e.target.value }),
+            addNote: this.state.addNote,
+            setAddNote: (e) => this.setState({ addNote: e.target.value }),
+          };
+        });
+        return {
+          id: s.id, title: s.title, num: String(i + 1).padStart(2, "0"), roles,
+          sub: s.roles.length + " roles", _match: secHasMatch,
+        };
+      })
+      .filter(s => cat === "all" || s.id === cat)
+      .filter(s => !q || s._match);
+
+    const totalMons = Object.keys(this.monRoleMap()).length;
+
+    let selected = null;
+    if (this.state.selected) {
+      const name = this.state.selected;
+      const m = this.monRoleMap()[name] || {};
+      const groups = all.filter(s => m[s.id]).map(s => ({
+        title: m[s.id].title.toUpperCase(),
+        roles: m[s.id].roles.map(x => x.note ? (x.role + " · " + x.note) : x.role),
+      }));
+      const rc = groups.reduce((n, g) => n + g.roles.length, 0);
+      selected = { name, url: this.url(name), groups, roleCount: rc + " roles · " + groups.length + " categories" };
+    }
+
+    return {
+      q: this.state.q,
+      setQuery: (e) => this.setState({ q: e.target.value }),
+      cats, sections,
+      empty: q && sections.length === 0,
+      statLine: q ? (totalShown + " found") : (totalMons + " Pokémon"),
+      selected,
+      closeDetail: () => this.setState({ selected: null }),
+      editMode,
+      monNames: this.allMonNames(),
+      pendingCount: pending.length,
+      discardClick: () => this.discardAll(),
+      exportClick: () => this.setState({ exportOpen: true }),
+      closeExport: () => this.setState({ exportOpen: false }),
+      exportOpen: this.state.exportOpen,
+      changelog: this.buildChangelog(),
+      copyChangelogClick: () => this.copyChangelog(),
+      copyFileClick: () => this.copyUpdatedFile(),
+      onImgLoad: (e) => { e.target.dataset.st = "done"; this.pump(); },
+      onImgError: (e) => {
+        const img = e.target;
+        const src = img.dataset.url || img.getAttribute("src") || "";
+        if (!src.startsWith("http")) return;
+        const base = src.split("?")[0];
+        const tries = parseInt(img.dataset.try || "0", 10);
+        if (tries < 4) {
+          img.dataset.try = String(tries + 1);
+          setTimeout(() => { img.src = base + "?r=" + tries; }, 450 * (tries + 1));
+        } else {
+          img.dataset.st = "done";
+          img.src = this.placeholder();
+          this.pump();
+        }
+      },
+    };
+  }
+
+  pump() {
+    const CONC = 16;
+    const STALL = 9000; // ms: um load que passa disso (ex.: aba ficou escondida) é reiniciado
+    const now = Date.now();
+    const imgs = document.querySelectorAll('img[data-url]');
+    let loading = 0;
+    imgs.forEach(img => {
+      // React reaproveita o <img> entre abas: se o data-url mudou, o src atual
+      // é de outro Pokémon → zera o estado para recarregar o sprite certo.
+      const want = img.dataset.url || "";
+      const cur = (img.getAttribute("src") || "").split("?")[0];
+      if (want.startsWith("http") && cur && cur !== want && !cur.startsWith("data:")) {
+        img.dataset.st = "";
+        img.dataset.try = "";
+      }
+      const st = img.dataset.st;
+      if (st === "loading") {
+        // terminou de fato mas o onLoad não disparou (voltou de aba escondida)
+        if (img.complete && img.naturalWidth > 0) { img.dataset.st = "done"; return; }
+        // travou tempo demais → libera para recarregar
+        if (now - (parseInt(img.dataset.t0 || "0", 10)) > STALL) { img.dataset.st = ""; return; }
+        loading++;
+      } else if (st === "done" && !img.src.startsWith("data:") && img.complete && img.naturalWidth === 0) {
+        // marcado done mas o pixel sumiu (cache descartado) → recarrega
+        img.dataset.st = "";
+      }
+    });
+    for (const img of imgs) {
+      if (loading >= CONC) break;
+      if (img.dataset.st) continue;
+      const url = img.dataset.url;
+      if (!url || !url.startsWith("http")) continue;
+      img.dataset.st = "loading";
+      img.dataset.t0 = String(now);
+      img.src = url + (img.dataset.try ? "?r=" + img.dataset.try : "");
+      loading++;
+    }
+  }
+
+  openMon(name) { this.setState({ selected: name }); }
+
+  placeholder() {
+    return "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><circle cx="28" cy="28" r="17" fill="none" stroke="#b8ae9c" stroke-width="3"/><line x1="11" y1="28" x2="45" y2="28" stroke="#b8ae9c" stroke-width="3"/><circle cx="28" cy="28" r="5.5" fill="#b8ae9c"/></svg>');
+  }
+
+  async componentDidMount() {
+    const m = await import("./roles-data.js");
+    // Modo de edição escondido: só liga com ?edit=1 na URL. Sem link nenhum na UI.
+    const editMode = new URLSearchParams(location.search).get("edit") === "1";
+    let pendingEdits = [];
+    try { pendingEdits = JSON.parse(localStorage.getItem(EDIT_STORAGE_KEY) || "[]"); } catch {}
+    this.setState({ sections: m.SECTIONS, slugs: m.SPRITE_SLUGS, base: m.SPRITE_BASE, editMode, pendingEdits });
+    this.pump();
+    this._pumpTimer = setInterval(() => this.pump(), 700);
+    // Ao voltar para a aba, revalida sprites que possam ter travado enquanto escondida.
+    this._onVis = () => { if (!document.hidden) this.pump(); };
+    document.addEventListener("visibilitychange", this._onVis);
+  }
+  componentWillUnmount() {
+    clearInterval(this._pumpTimer);
+    document.removeEventListener("visibilitychange", this._onVis);
+  }
+}
+</script>
+</body>
+</html>
