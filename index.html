@@ -22,17 +22,61 @@
   ::-webkit-scrollbar-thumb { background: #c3b8a2; border: 3px solid #e6dece; }
   ::-webkit-scrollbar-thumb:hover { background: #a79c85; }
   @keyframes drawerIn { from { transform: translateX(24px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes modalIn { from { transform: translateY(10px) scale(.98); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+  @keyframes toastIn { from { transform: translate(-50%, 12px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+
+  /* Impressão: #printChanges fica fora da tela (display:none) e só aparece
+     quando o navegador imprime — o "Save as PDF" do drawer de export.
+     #appShell (o app todo) some no print pra não sobrar páginas em branco. */
+  #printChanges { display: none; }
+  @media print {
+    @page { margin: 15mm; }
+    #appShell { display: none !important; }
+    #printChanges { display: block; }
+  }
+  #printChanges { font-family: 'Space Grotesk', system-ui, sans-serif; color: #1b1917; }
+  #printChanges .masthead { border-top: 6px solid #cf3a22; padding-top: 14px; margin-bottom: 20px; }
+  #printChanges .kicker { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #cf3a22; margin: 0 0 7px; }
+  #printChanges h1 { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 31px; line-height: .95; letter-spacing: -.025em; margin: 0 0 10px; }
+  #printChanges .meta { font-family: 'Space Mono', monospace; font-size: 10.5px; color: #7a7263; text-transform: uppercase; letter-spacing: .07em; display: flex; gap: 16px; flex-wrap: wrap; }
+  #printChanges .legend { display: flex; gap: 18px; margin: 15px 0 0; font-family: 'Space Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: #4a453d; }
+  #printChanges .legend span { display: flex; align-items: center; gap: 6px; }
+  #printChanges .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  #printChanges .dot.add { background: #2e7d32; }
+  #printChanges .dot.remove { background: #cf3a22; }
+  #printChanges .dot.edit { background: #1b1917; }
+  #printChanges h2 { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 19px; margin: 26px 0 3px; letter-spacing: -.02em; break-after: avoid; }
+  #printChanges .secrule { height: 1.5px; background: #1b1917; margin: 0 0 13px; break-after: avoid; }
+  #printChanges h3 { font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #7a7263; margin: 15px 0 9px; break-after: avoid; }
+  #printChanges .print-tiles { display: flex; flex-wrap: wrap; gap: 9px; break-inside: avoid; }
+  #printChanges .print-tile { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 78px; padding: 10px 4px 8px; border: 1.5px solid #ded6c6; background: #faf7f0; position: relative; break-inside: avoid; }
+  #printChanges .print-tile.add { border-color: #2e7d32; }
+  #printChanges .print-tile.remove { border-color: #cf3a22; background: #fbeee9; }
+  #printChanges .print-tile.edit { border-color: #1b1917; }
+  #printChanges .print-tile img { width: 46px; height: 46px; object-fit: contain; image-rendering: pixelated; }
+  #printChanges .print-tile .nm { font-family: 'Space Mono', monospace; font-size: 8px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; color: #4a453d; text-align: center; line-height: 1.1; }
+  #printChanges .print-tile.remove .nm { text-decoration: line-through; color: #cf3a22; }
+  #printChanges .print-tile .nt { font-family: 'Space Mono', monospace; font-size: 7px; font-weight: 700; text-transform: uppercase; color: #cf3a22; text-align: center; line-height: 1; }
+  #printChanges .badge { position: absolute; top: -9px; right: -9px; min-width: 19px; height: 19px; padding: 0 4px; border-radius: 10px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; border: 1.5px solid #fff; }
+  #printChanges .print-tile.add .badge { background: #2e7d32; }
+  #printChanges .print-tile.remove .badge { background: #cf3a22; }
+  #printChanges .print-tile.edit .badge { background: #1b1917; }
 </style>
 </helmet>
-<div style="min-height: 100vh; background: #f1ece1; color: #1b1917; font-family: 'Space Grotesk', system-ui, sans-serif; padding-bottom: 90px;">
+<div id="appShell" style="min-height: 100vh; background: #f1ece1; color: #1b1917; font-family: 'Space Grotesk', system-ui, sans-serif; padding-bottom: 90px;">
 
   <sc-if value="{{ editMode }}" hint-placeholder-val="{{ false }}">
     <div style="position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: #cf3a22; color: #f1ece1; border-top: 1.5px solid #1b1917;">
-      <div style="max-width: 1180px; margin: 0 auto; padding: 12px 40px; display: flex; align-items: center; gap: 14px; font-family: 'Space Mono', monospace; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase;">
-        <span>Edit mode — {{ pendingCount }} pending change(s)</span>
+      <div style="max-width: 1180px; margin: 0 auto; padding: 11px 40px; display: flex; align-items: center; gap: 14px; font-family: 'Space Mono', monospace; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase;">
+        <span style="font-weight: 700;">Edit mode</span>
+        <span style="width: 1px; height: 13px; background: rgba(241,236,225,.5);"></span>
+        <span>{{ pendingLabel }}</span>
         <span style="flex: 1;"></span>
-        <button onClick="{{ discardClick }}" style="background: none; border: 1.5px solid #f1ece1; color: #f1ece1; padding: 6px 14px; font-family: inherit; font-size: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer;" style-hover="background: #f1ece1; color: #cf3a22;">Discard all</button>
-        <button onClick="{{ exportClick }}" style="background: #1b1917; border: 1.5px solid #1b1917; color: #f1ece1; padding: 6px 14px; font-family: inherit; font-size: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer;" style-hover="background: #f1ece1; color: #1b1917;">Export</button>
+        <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ discardClick }}" style="background: none; border: 1.5px solid #f1ece1; color: #f1ece1; padding: 6px 14px; font-family: inherit; font-size: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer;" style-hover="background: #f1ece1; color: #cf3a22;">Discard</button>
+          <button onClick="{{ exportClick }}" style="background: #1b1917; border: 1.5px solid #1b1917; color: #f1ece1; padding: 6px 14px; font-family: inherit; font-size: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer;" style-hover="background: #f1ece1; color: #1b1917;">Review &amp; export</button>
+        </sc-if>
+        <button onClick="{{ exitClick }}" style="background: none; border: 1.5px solid rgba(241,236,225,.55); color: #f1ece1; padding: 6px 14px; font-family: inherit; font-size: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer;" style-hover="background: #f1ece1; color: #cf3a22;">Exit</button>
       </div>
     </div>
   </sc-if>
@@ -72,6 +116,19 @@
     </div>
   </div>
 
+  <sc-if value="{{ editMode }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 14px 40px 0;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 18px; padding: 11px 16px; background: #f7f3ea; border: 1px solid #ded6c6; font-family: 'Space Mono', monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: #4a453d;">
+        <span style="font-weight: 700; color: #1b1917;">You're editing</span>
+        <span style="display: flex; align-items: center; gap: 7px;"><i style="width: 11px; height: 11px; background: #2e7d32; display: inline-block;"></i>Added</span>
+        <span style="display: flex; align-items: center; gap: 7px;"><i style="width: 11px; height: 11px; background: #cf3a22; display: inline-block;"></i>Removed</span>
+        <span style="display: flex; align-items: center; gap: 7px;"><i style="width: 11px; height: 11px; border: 1.5px solid #1b1917; display: inline-block;"></i>Note changed</span>
+        <span style="flex: 1;"></span>
+        <span style="color: #7a7263; text-transform: none; letter-spacing: 0;">Click to select · drag to move (Alt = copy) · "Copy to…" duplicates · Del removes</span>
+      </div>
+    </div>
+  </sc-if>
+
   <main style="max-width: 1180px; margin: 0 auto; padding: 4px 40px 0;">
     <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="4">
       <section style="padding: 40px 0 8px; border-bottom: 1px solid #cdc3af;">
@@ -86,16 +143,19 @@
             <div style="display: flex; align-items: baseline; gap: 10px; padding-bottom: 9px; margin-bottom: 12px; border-bottom: 1.5px solid #1b1917;">
               <h3 style="margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -.01em;">{{ role.name }}</h3>
             </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 7px;">
+            <div style="{{ role.gridStyle }}" onDragOver="{{ role.onDragOver }}" onDragLeave="{{ role.onDragLeave }}" onDrop="{{ role.onDrop }}">
               <sc-for list="{{ role.mons }}" as="mon" hint-placeholder-count="6">
-                <div onClick="{{ mon.onClick }}" role="button" tabindex="0" title="{{ mon.name }}" style="{{ mon.tileStyle }}" style-hover="transform: translateY(-3px); border-color: #cf3a22; background: #fff;">
+                <div onClick="{{ mon.onClick }}" draggable="{{ mon.draggable }}" onDragStart="{{ mon.onDragStart }}" onDragEnd="{{ mon.onDragEnd }}" role="button" tabindex="0" title="{{ mon.name }}" style="{{ mon.tileStyle }}" style-hover="{{ mon.hover }}">
                   <sc-if value="{{ mon.editMode }}" hint-placeholder-val="{{ false }}">
-                    <button onClick="{{ mon.removeClick }}" title="Remove" style="position: absolute; top: -7px; right: -7px; width: 18px; height: 18px; border-radius: 50%; background: #cf3a22; color: #f1ece1; border: 1.5px solid #f1ece1; font-family: 'Space Mono', monospace; font-size: 10px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;" style-hover="background: #a52c17;">✕</button>
+                    <button onClick="{{ mon.cornerClick }}" title="{{ mon.cornerTitle }}" style="{{ mon.cornerStyle }}" style-hover="filter: brightness(.88);">{{ mon.cornerLabel }}</button>
                   </sc-if>
-                  <img data-url="{{ mon.url }}" onLoad="{{ onImgLoad }}" onError="{{ onImgError }}" alt="{{ mon.name }}" style="width: 50px; height: 50px; object-fit: contain; image-rendering: pixelated;">
-                  <span style="font-family: 'Space Mono', monospace; font-size: 8px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: #7a7263; max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1;">{{ mon.name }}</span>
+                  <sc-if value="{{ mon.badgeText }}" hint-placeholder-val="">
+                    <span style="{{ mon.badgeStyle }}">{{ mon.badgeText }}</span>
+                  </sc-if>
+                  <img data-url="{{ mon.url }}" draggable="false" onLoad="{{ onImgLoad }}" onError="{{ onImgError }}" alt="{{ mon.name }}" style="width: 50px; height: 50px; object-fit: contain; image-rendering: pixelated;">
+                  <span style="{{ mon.nameStyle }}">{{ mon.name }}</span>
                   <sc-if value="{{ mon.note }}" hint-placeholder-val="">
-                    <span style="font-family: 'Space Mono', monospace; font-size: 7.5px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; color: #cf3a22; max-width: 66px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1;">{{ mon.note }}</span>
+                    <span style="{{ mon.noteStyle }}">{{ mon.note }}</span>
                   </sc-if>
                 </div>
               </sc-for>
@@ -103,11 +163,23 @@
                 <button onClick="{{ role.addOpenClick }}" title="Add Pokémon" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 72px; height: 83px; background: transparent; border: 1.5px dashed #b8ae9c; color: #7a7263; cursor: pointer; font-family: inherit; font-size: 22px; padding: 0;" style-hover="border-color: #cf3a22; color: #cf3a22;">+</button>
               </sc-if>
             </div>
+            <sc-if value="{{ role.hasSel }}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 12px; background: #f7f3ea; border: 1.5px solid #1b1917;">
+                <span style="font-family: 'Space Mono', monospace; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #1b1917;">Selected · {{ role.selName }}</span>
+                <input value="{{ role.noteDraft }}" onInput="{{ role.setNoteDraft }}" onKeyDown="{{ role.noteDraftKeyDown }}" placeholder="Note (e.g. Stone Axe)" spellcheck="false" style="flex: 1; min-width: 140px; background: #fff; border: 1px solid #ded6c6; padding: 7px 9px; font-family: 'Space Mono', monospace; font-size: 12px; outline: none;">
+                <button onClick="{{ role.selSaveNote }}" style="background: #cf3a22; color: #f1ece1; border: none; padding: 8px 14px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="background: #a52c17;">Save note</button>
+                <button onClick="{{ role.selCopyTo }}" style="background: none; border: 1px solid #1b1917; color: #1b1917; padding: 8px 14px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="background: #1b1917; color: #f1ece1;">Copy to…</button>
+                <button onClick="{{ role.selRemove }}" style="background: none; border: 1px solid #cf3a22; color: #cf3a22; padding: 8px 14px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="background: #cf3a22; color: #f1ece1;">Remove</button>
+                <button onClick="{{ role.selDeselect }}" style="background: none; border: 1px solid #ded6c6; color: #7a7263; padding: 8px 12px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="border-color: #1b1917; color: #1b1917;">Done</button>
+                <span style="flex-basis: 100%; font-family: 'Space Mono', monospace; font-size: 9.5px; color: #7a7263; letter-spacing: .03em;">Drag to move · Alt-drag to copy · "Copy to…" duplicates into another role · Del to remove</span>
+              </div>
+            </sc-if>
             <sc-if value="{{ role.isAdding }}" hint-placeholder-val="{{ false }}">
-              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; padding: 10px; background: #f7f3ea; border: 1px solid #ded6c6;">
-                <input list="mon-names" value="{{ role.addName }}" onInput="{{ role.setAddName }}" onKeyDown="{{ role.addKeyDown }}" placeholder="Pokémon name" spellcheck="false" style="flex: 1; min-width: 140px; background: #fff; border: 1px solid #ded6c6; padding: 7px 9px; font-family: 'Space Mono', monospace; font-size: 12px; outline: none;">
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 12px; background: #f7f3ea; border: 1.5px solid #2e7d32;">
+                <span style="font-family: 'Space Mono', monospace; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #2e7d32;">Add</span>
+                <input list="mon-names" value="{{ role.addName }}" onInput="{{ role.setAddName }}" onKeyDown="{{ role.addKeyDown }}" placeholder="Pokémon name" spellcheck="false" autofocus style="flex: 1; min-width: 140px; background: #fff; border: 1px solid #ded6c6; padding: 7px 9px; font-family: 'Space Mono', monospace; font-size: 12px; outline: none;">
                 <input value="{{ role.addNote }}" onInput="{{ role.setAddNote }}" onKeyDown="{{ role.addKeyDown }}" placeholder="Note (optional)" spellcheck="false" style="flex: 1; min-width: 140px; background: #fff; border: 1px solid #ded6c6; padding: 7px 9px; font-family: 'Space Mono', monospace; font-size: 12px; outline: none;">
-                <button onClick="{{ role.addConfirmClick }}" style="background: #cf3a22; color: #f1ece1; border: none; padding: 8px 16px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="background: #a52c17;">Add</button>
+                <button onClick="{{ role.addConfirmClick }}" style="background: #2e7d32; color: #f1ece1; border: none; padding: 8px 16px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="filter: brightness(.9);">Add</button>
                 <button onClick="{{ role.addCancelClick }}" style="background: none; border: 1px solid #ded6c6; color: #7a7263; padding: 8px 16px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="border-color: #1b1917; color: #1b1917;">Done</button>
               </div>
             </sc-if>
@@ -157,24 +229,123 @@
 
   <sc-if value="{{ exportOpen }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ closeExport }}" style="position: fixed; inset: 0; z-index: 40; background: rgba(27,25,23,.34);"></div>
-    <aside style="position: fixed; top: 0; right: 0; bottom: 0; z-index: 41; width: 460px; max-width: 92vw; background: #f1ece1; border-left: 1.5px solid #1b1917; box-shadow: -30px 0 60px rgba(27,25,23,.18); overflow-y: auto; animation: drawerIn .22s ease;">
+    <aside style="position: fixed; top: 0; right: 0; bottom: 0; z-index: 41; width: 470px; max-width: 92vw; background: #f1ece1; border-left: 1.5px solid #1b1917; box-shadow: -30px 0 60px rgba(27,25,23,.18); overflow-y: auto; animation: drawerIn .22s ease;">
       <div style="position: relative; padding: 26px 28px 24px; border-bottom: 1.5px solid #1b1917;">
         <button onClick="{{ closeExport }}" style="position: absolute; top: 22px; right: 24px; width: 32px; height: 32px; background: none; border: 1.5px solid #1b1917; color: #1b1917; font-family: 'Space Mono', monospace; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;" style-hover="background: #cf3a22; border-color: #cf3a22; color: #f1ece1;">✕</button>
-        <div style="font-family: 'Space Mono', monospace; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: #cf3a22; margin-bottom: 14px;">Export changes</div>
-        <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 24px; line-height: .95; letter-spacing: -.02em;">{{ pendingCount }} pending change(s)</h2>
+        <div style="font-family: 'Space Mono', monospace; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: #cf3a22; margin-bottom: 14px;">Publish changes</div>
+        <h2 style="margin: 0 0 8px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 24px; line-height: .95; letter-spacing: -.02em;">{{ pendingLabel }}</h2>
+        <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #4a453d;">{{ printSummary }}</p>
       </div>
-      <div style="padding: 24px 28px 44px; display: flex; flex-direction: column; gap: 16px;">
-        <textarea readonly style="width: 100%; min-height: 200px; background: #f7f3ea; border: 1px solid #ded6c6; padding: 10px; font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.6; resize: vertical;">{{ changelog }}</textarea>
-        <button onClick="{{ copyChangelogClick }}" style="background: none; border: 1.5px solid #1b1917; color: #1b1917; padding: 11px; font-family: 'Space Mono', monospace; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="background: #1b1917; color: #f1ece1;">Copy changelog</button>
-        <button onClick="{{ copyFileClick }}" style="background: #cf3a22; border: none; color: #f1ece1; padding: 11px; font-family: 'Space Mono', monospace; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="background: #a52c17;">Copy updated roles-data.js</button>
-        <p style="margin: 0; font-size: 12px; color: #7a7263; line-height: 1.5;">Send both to whoever maintains the site — they'll paste the second one over roles-data.js and commit.</p>
+      <div style="padding: 22px 28px 44px; display: flex; flex-direction: column; gap: 26px;">
+
+        <div style="display: flex; flex-direction: column; gap: 11px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="width: 22px; height: 22px; background: #1b1917; color: #f1ece1; font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</span>
+            <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 16px;">Update the data file</span>
+          </div>
+          <p style="margin: 0 0 2px; font-size: 12.5px; line-height: 1.5; color: #4a453d;">Copies the full <b>roles-data.js</b> with your changes applied. Paste it over the file and commit — that's what makes them live for everyone.</p>
+          <button onClick="{{ copyFileClick }}" style="background: #cf3a22; border: none; color: #f1ece1; padding: 12px; font-family: 'Space Mono', monospace; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="background: #a52c17;">Copy roles-data.js</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 11px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="width: 22px; height: 22px; background: #1b1917; color: #f1ece1; font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</span>
+            <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 16px;">Share a summary <span style="font-weight: 400; color: #7a7263; font-size: 13px;">(optional)</span></span>
+          </div>
+          <p style="margin: 0 0 2px; font-size: 12.5px; line-height: 1.5; color: #4a453d;">A visual sheet of only what changed — good for posting the proposal before it's applied.</p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button onClick="{{ printClick }}" style="flex: 1; min-width: 150px; background: none; border: 1.5px solid #cf3a22; color: #cf3a22; padding: 11px; font-family: 'Space Mono', monospace; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="background: #cf3a22; color: #f1ece1;">Save as PDF</button>
+            <button onClick="{{ copyChangelogClick }}" style="flex: 1; min-width: 150px; background: none; border: 1.5px solid #1b1917; color: #1b1917; padding: 11px; font-family: 'Space Mono', monospace; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="background: #1b1917; color: #f1ece1;">Copy text list</button>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #7a7263;">Preview</span>
+          <textarea readonly style="width: 100%; min-height: 150px; background: #f7f3ea; border: 1px solid #ded6c6; padding: 10px; font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.6; resize: vertical; color: #1b1917;">{{ changelog }}</textarea>
+        </div>
       </div>
     </aside>
   </sc-if>
 
+  <sc-if value="{{ copyPicker }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ copyPicker.close }}" style="position: fixed; inset: 0; z-index: 60; background: rgba(27,25,23,.44); display: flex; align-items: center; justify-content: center; padding: 24px;">
+      <div onClick="{{ stop }}" style="width: 460px; max-width: 92vw; max-height: 82vh; display: flex; flex-direction: column; background: #f1ece1; border: 1.5px solid #1b1917; box-shadow: 0 30px 70px rgba(27,25,23,.3); animation: modalIn .16s ease;">
+        <div style="padding: 22px 24px 16px; border-bottom: 1.5px solid #1b1917;">
+          <div style="font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #cf3a22; margin-bottom: 10px;">Copy {{ copyPicker.name }} to</div>
+          <div style="display: flex; align-items: center; border-bottom: 1.5px solid #1b1917;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1b1917" stroke-width="2.4"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+            <input value="{{ copyPicker.q }}" onInput="{{ copyPicker.setQ }}" placeholder="Filter roles…" spellcheck="false" autofocus style="flex: 1; background: transparent; border: none; font-family: 'Space Mono', monospace; font-size: 13px; padding: 8px 4px 8px 9px; outline: none; color: #1b1917;">
+          </div>
+        </div>
+        <div style="overflow-y: auto; padding: 8px 0;">
+          <sc-for list="{{ copyPicker.groups }}" as="grp" hint-placeholder-count="3">
+            <div style="font-family: 'Space Mono', monospace; font-size: 9.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #7a7263; padding: 10px 24px 5px;">{{ grp.title }}</div>
+            <sc-for list="{{ grp.roles }}" as="r" hint-placeholder-count="3">
+              <button onClick="{{ r.onClick }}" disabled="{{ r.disabled }}" style="{{ r.style }}" style-hover="{{ r.hover }}">
+                <span>{{ r.name }}</span>
+                <sc-if value="{{ r.hasIt }}" hint-placeholder-val="{{ false }}"><span style="font-family: 'Space Mono', monospace; font-size: 9px; color: #7a7263; text-transform: uppercase; letter-spacing: .04em;">already here</span></sc-if>
+              </button>
+            </sc-for>
+          </sc-for>
+          <sc-if value="{{ copyPicker.empty }}" hint-placeholder-val="{{ false }}">
+            <div style="padding: 24px; text-align: center; font-family: 'Space Mono', monospace; font-size: 12px; color: #7a7263;">No role matches "{{ copyPicker.q }}"</div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ modal.cancelClick }}" style="position: fixed; inset: 0; z-index: 60; background: rgba(27,25,23,.44); display: flex; align-items: center; justify-content: center; padding: 24px;">
+      <div onClick="{{ stop }}" style="width: 400px; max-width: 92vw; background: #f1ece1; border: 1.5px solid #1b1917; box-shadow: 0 30px 70px rgba(27,25,23,.3); animation: modalIn .16s ease;">
+        <div style="padding: 24px 26px 18px;">
+          <h3 style="margin: 0 0 11px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 21px; letter-spacing: -.02em;">{{ modal.title }}</h3>
+          <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #4a453d;">{{ modal.body }}</p>
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: flex-end; padding: 4px 26px 24px;">
+          <button onClick="{{ modal.cancelClick }}" style="background: none; border: 1.5px solid #cdc3af; color: #4a453d; padding: 9px 16px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer;" style-hover="border-color: #1b1917; color: #1b1917;">{{ modal.cancelLabel }}</button>
+          <button onClick="{{ modal.confirmClick }}" style="{{ modal.confirmStyle }}" style-hover="filter: brightness(.9);">{{ modal.confirmLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}" hint-placeholder-val="">
+    <div style="position: fixed; left: 50%; bottom: 78px; z-index: 61; background: #1b1917; color: #f1ece1; padding: 11px 18px; font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: .03em; box-shadow: 0 14px 34px rgba(27,25,23,.32); animation: toastIn .18s ease; transform: translateX(-50%);">{{ toast }}</div>
+  </sc-if>
+
   <footer style="max-width: 1180px; margin: 34px auto 0; padding: 0 40px; font-family: 'Space Mono', monospace; color: #7a7263; font-size: 11.5px; line-height: 1.7; letter-spacing: .02em;">
-    Adapted from Smogon's SM OU Role Compendium, filtered for PRO availability — adjust the lists as the metagame shifts. Sprites from Smogon's Mystery Dungeon set. Click a Pokémon to see every role it fills.
+    <p style="margin: 0;">Adapted from Smogon's SM OU Role Compendium, filtered for PRO availability — adjust the lists as the metagame shifts. Sprites from Smogon's Mystery Dungeon set. Click a Pokémon to see every role it fills.</p>
+    <sc-if value="{{ showEditBtn }}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{ enterEditClick }}" style="margin-top: 16px; background: none; border: 1.5px solid #cf3a22; color: #cf3a22; padding: 8px 16px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; cursor: pointer;" style-hover="background: #cf3a22; color: #f1ece1;">Edit the compendium →</button>
+    </sc-if>
   </footer>
+</div>
+
+<div id="printChanges">
+  <div class="masthead">
+    <p class="kicker">Pokémon Revolution Online · PRO OU</p>
+    <h1>Role Compendium — Suggested Changes</h1>
+    <div class="meta"><span>{{ printDate }}</span><span>{{ printSummary }}</span></div>
+    <div class="legend"><span><i class="dot add"></i>Added</span><span><i class="dot remove"></i>Removed</span><span><i class="dot edit"></i>Note changed</span></div>
+  </div>
+  <sc-for list="{{ printGroups }}" as="grp" hint-placeholder-count="0">
+    <h2>{{ grp.title }}</h2>
+    <div class="secrule"></div>
+    <sc-for list="{{ grp.roles }}" as="role" hint-placeholder-count="0">
+      <h3>{{ role.name }}</h3>
+      <div class="print-tiles">
+        <sc-for list="{{ role.mons }}" as="mon" hint-placeholder-count="0">
+          <div class="print-tile {{ mon.signClass }}">
+            <span class="badge">{{ mon.sign }}</span>
+            <img data-purl="{{ mon.url }}" alt="{{ mon.name }}">
+            <span class="nm">{{ mon.name }}</span>
+            <sc-if value="{{ mon.note }}" hint-placeholder-val=""><span class="nt">{{ mon.note }}</span></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </sc-for>
+  </sc-for>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:900}}">
@@ -184,10 +355,13 @@ class Component extends DCLogic {
   // Os dados (Pokémon, funções, slugs de sprite) ficam em roles-data.js.
   // editMode/pendingEdits: modo de edição local (?edit=1) — mudanças ficam só
   // no navegador (localStorage) até alguém exportar e aplicar no arquivo.
+  // sel/clipboard/dragKey/dropKey: editor espacial (selecionar, copiar, arrastar).
   state = {
     q: "", cat: "all", selected: null, sections: [], slugs: {}, base: "",
     editMode: false, pendingEdits: [], addingKey: null, addName: "", addNote: "",
-    exportOpen: false, rawSource: null,
+    sel: null, noteDraft: "", dragKey: null, dropKey: null,
+    copyPicker: null, copyPickerQ: "",
+    exportOpen: false, rawSource: null, modal: null, toast: null,
   };
 
   slugFor(name) {
@@ -196,8 +370,9 @@ class Component extends DCLogic {
   }
   url(name) { return this.state.base + this.slugFor(name) + ".png"; }
 
-  // Aplica pendingEdits por cima do dado base (só quando editMode está ligado —
-  // um visitante comum nunca deve ver rascunhos de uma sessão de edição anterior).
+  // Resultado "limpo": removidos saem, adicionados entram, notas aplicadas.
+  // Usado para export, contadores e painel de detalhe. A grade da tela usa o
+  // modelo com status (renderVals), pra mostrar os removidos riscados.
   data() {
     const base = this.state.sections;
     const pending = this.state.pendingEdits;
@@ -206,20 +381,24 @@ class Component extends DCLogic {
       ...sec,
       roles: sec.roles.map(role => {
         const key = sec.id + "|" + role.name;
-        const removes = new Set(
-          pending.filter(e => e.type === "remove" && (e.sectionId + "|" + e.roleName) === key).map(e => e.name)
-        );
+        const removes = new Set(pending.filter(e => e.type === "remove" && (e.sectionId + "|" + e.roleName) === key).map(e => e.name));
+        const notes = {};
+        pending.filter(e => e.type === "note" && (e.sectionId + "|" + e.roleName) === key).forEach(e => { notes[e.name] = e.note; });
         const adds = pending.filter(e => e.type === "add" && (e.sectionId + "|" + e.roleName) === key);
-        if (!removes.size && !adds.length) return role;
+        if (!removes.size && !adds.length && !Object.keys(notes).length) return role;
         const mons = role.mons
           .filter(m => !removes.has(this.monName(m)))
-          .concat(adds.map(e => ({ name: e.name, note: e.note || "" })));
+          .map(m => {
+            const name = this.monName(m);
+            if (name in notes) return notes[name] ? { name, note: notes[name] } : name;
+            return m;
+          })
+          .concat(adds.map(e => e.note ? { name: e.name, note: e.note } : e.name));
         return { ...role, mons };
       }),
     }));
   }
 
-  // Cada entrada de "mons" pode ser "Nome" ou { name, note }.
   monName(m) { return typeof m === "string" ? m : m.name; }
   monNote(m) { return typeof m === "string" ? "" : (m.note || ""); }
 
@@ -229,9 +408,6 @@ class Component extends DCLogic {
     return [...set].sort();
   }
 
-  // "mega lopunny" digitado precisa virar "Mega Lopunny" — SPRITE_SLUGS e o
-  // sprite fallback (slugFor) são case-sensitive, então qualquer diferença de
-  // maiúscula/minúscula faz o sprite certo nunca ser encontrado.
   canonicalMonName(name) {
     const lower = name.toLowerCase();
     for (const n of this.allMonNames()) if (n.toLowerCase() === lower) return n;
@@ -244,42 +420,215 @@ class Component extends DCLogic {
     localStorage.setItem(EDIT_STORAGE_KEY, JSON.stringify(list));
   }
 
-  // Não fecha o formulário depois de adicionar — deixa o campo pronto pra
-  // digitar o próximo nome e apertar Enter de novo (bulk add sem reabrir o "+").
   addMon(sectionId, roleName, name, note) {
     name = (name || "").trim();
     if (!name) return;
     name = this.canonicalMonName(name);
-    const role = this.data().find(s => s.id === sectionId)?.roles.find(r => r.name === roleName);
-    const exists = role && role.mons.some(m => this.monName(m).toLowerCase() === name.toLowerCase());
-    if (exists) { this.setState({ addName: "", addNote: "" }); return; }
+    if (this._roleHasMon(this.state.pendingEdits, sectionId, roleName, name)) { this.setState({ addName: "", addNote: "" }); this.showToast(name + " is already in this role"); return; }
     this.savePending([...this.state.pendingEdits, { type: "add", sectionId, roleName, name, note: (note || "").trim() }]);
     this.setState({ addName: "", addNote: "" });
   }
 
   removeMon(sectionId, roleName, name, isPendingAdd) {
-    const pending = this.state.pendingEdits;
-    if (isPendingAdd) {
-      this.savePending(pending.filter(e => !(e.type === "add" && e.sectionId === sectionId && e.roleName === roleName && e.name === name)));
-    } else {
-      this.savePending([...pending, { type: "remove", sectionId, roleName, name }]);
+    this.savePending(this._applyRemove(this.state.pendingEdits, sectionId, roleName, name, isPendingAdd));
+    const s = this.state.sel;
+    if (s && s.sectionId === sectionId && s.roleName === roleName && s.name === name) this.setState({ sel: null, noteDraft: "" });
+  }
+
+  undoRemove(sectionId, roleName, name) {
+    this.savePending(this.state.pendingEdits.filter(e => !(e.type === "remove" && e.sectionId === sectionId && e.roleName === roleName && e.name === name)));
+  }
+
+  // ---------- Editor espacial: selecionar / copiar / colar / arrastar ----------
+  selectCard(sectionId, roleName, name, isPendingAdd) {
+    const cur = this.state.sel;
+    if (cur && cur.sectionId === sectionId && cur.roleName === roleName && cur.name === name) {
+      this.setState({ sel: null, noteDraft: "" });
+      return;
     }
+    this.setState({ sel: { sectionId, roleName, name, isPendingAdd }, noteDraft: this.currentNote(sectionId, roleName, name), addingKey: null });
+  }
+
+  saveSelNote() {
+    const s = this.state.sel;
+    if (!s) return;
+    this.setMonNote(s.sectionId, s.roleName, s.name, this.state.noteDraft);
+    this.showToast("Note saved");
+  }
+
+  // "Copy to…" abre um seletor de papel destino (com busca). Um clique copia.
+  openCopyPicker() {
+    const s = this.state.sel;
+    if (!s) return;
+    this.setState({ copyPicker: { name: s.name, note: this.currentNote(s.sectionId, s.roleName, s.name), fromSection: s.sectionId, fromRole: s.roleName }, copyPickerQ: "" });
+  }
+  closeCopyPicker() { this.setState({ copyPicker: null, copyPickerQ: "" }); }
+  pickCopyTarget(sectionId, roleName) {
+    const cp = this.state.copyPicker;
+    if (!cp) return;
+    this.copyToRole(cp.name, cp.note, { sectionId, roleName });
+    this.closeCopyPicker();
+  }
+
+  removeSelected() {
+    const s = this.state.sel;
+    if (!s) return;
+    this.removeMon(s.sectionId, s.roleName, s.name, this.isPendingAddFor(s.sectionId, s.roleName, s.name));
+  }
+
+  onKey(e) {
+    if (!this.state.editMode) return;
+    const t = e.target || {};
+    const tag = (t.tagName || "").toLowerCase();
+    const typing = tag === "input" || tag === "textarea" || t.isContentEditable;
+    if (!typing && (e.key === "Delete" || e.key === "Backspace")) { if (this.state.sel) { this.removeSelected(); e.preventDefault(); } return; }
+    if (e.key === "Escape") { if (this.state.copyPicker) this.closeCopyPicker(); else if (this.state.sel) this.setState({ sel: null, noteDraft: "" }); }
+  }
+
+  handleDrop(sectionId, roleName, copy) {
+    const d = this._drag;
+    this._drag = null;
+    this.setState({ dropKey: null, dragKey: null });
+    if (!d) return;
+    const dst = { sectionId, roleName };
+    if (copy) this.copyToRole(d.name, d.note, dst);
+    else this.moveMon({ sectionId: d.sectionId, roleName: d.roleName }, d.name, d.note, d.isPendingAdd, dst);
+  }
+
+  // Mover = adiciona no destino + tira da origem, numa gravação só (evita ler
+  // state defasado entre dois setState assíncronos).
+  moveMon(src, name, note, isPendingAdd, dst) {
+    if (src.sectionId === dst.sectionId && src.roleName === dst.roleName) return;
+    let list = this.state.pendingEdits;
+    const has = this._roleHasMon(list, dst.sectionId, dst.roleName, name);
+    if (!has) list = this._applyAdd(list, dst.sectionId, dst.roleName, name, note);
+    list = this._applyRemove(list, src.sectionId, src.roleName, name, isPendingAdd);
+    this.savePending(list);
+    const s = this.state.sel;
+    if (s && s.sectionId === src.sectionId && s.roleName === src.roleName && s.name === name) this.setState({ sel: null, noteDraft: "" });
+    this.showToast(has ? (name + " already in " + dst.roleName + " — removed from " + src.roleName) : ("Moved " + name + " → " + dst.roleName));
+  }
+
+  copyToRole(name, note, dst) {
+    if (this._roleHasMon(this.state.pendingEdits, dst.sectionId, dst.roleName, name)) { this.showToast(name + " is already in " + dst.roleName); return; }
+    this.savePending(this._applyAdd(this.state.pendingEdits, dst.sectionId, dst.roleName, name, note));
+    this.showToast("Copied " + name + " → " + dst.roleName);
+  }
+
+  _applyAdd(list, sectionId, roleName, name, note) {
+    name = this.canonicalMonName((name || "").trim());
+    return [...list, { type: "add", sectionId, roleName, name, note: (note || "").trim() }];
+  }
+  _applyRemove(list, sectionId, roleName, name, isPendingAdd) {
+    if (isPendingAdd) return list.filter(e => !(e.type === "add" && e.sectionId === sectionId && e.roleName === roleName && e.name === name));
+    list = list.filter(e => !(e.type === "note" && e.sectionId === sectionId && e.roleName === roleName && e.name === name));
+    return [...list, { type: "remove", sectionId, roleName, name }];
+  }
+  _roleHasMon(list, sectionId, roleName, name) {
+    const lower = (name || "").toLowerCase();
+    const baseRole = this.state.sections.find(s => s.id === sectionId)?.roles.find(r => r.name === roleName);
+    const removed = list.some(e => e.type === "remove" && e.sectionId === sectionId && e.roleName === roleName && e.name.toLowerCase() === lower);
+    const baseHas = !!(baseRole && baseRole.mons.some(m => this.monName(m).toLowerCase() === lower)) && !removed;
+    const addHas = list.some(e => e.type === "add" && e.sectionId === sectionId && e.roleName === roleName && e.name.toLowerCase() === lower);
+    return baseHas || addHas;
+  }
+  isPendingAddFor(sectionId, roleName, name) {
+    return this.state.pendingEdits.some(e => e.type === "add" && e.sectionId === sectionId && e.roleName === roleName && e.name === name);
+  }
+
+  currentNote(sectionId, roleName, name) {
+    const p = this.state.pendingEdits;
+    const ne = p.find(e => e.type === "note" && e.sectionId === sectionId && e.roleName === roleName && e.name === name);
+    if (ne) return ne.note;
+    const ad = p.find(e => e.type === "add" && e.sectionId === sectionId && e.roleName === roleName && e.name === name);
+    if (ad) return ad.note || "";
+    const baseRole = this.state.sections.find(s => s.id === sectionId)?.roles.find(r => r.name === roleName);
+    const entry = baseRole?.mons.find(m => this.monName(m) === name);
+    return entry ? this.monNote(entry) : "";
+  }
+
+  // Se for add-pendente, muda o próprio add; se base, empilha/atualiza um "note"
+  // (ou remove-o se a nota voltar a ser igual à do arquivo).
+  setMonNote(sectionId, roleName, name, note) {
+    note = (note || "").trim();
+    const pending = this.state.pendingEdits;
+    const addIdx = pending.findIndex(e => e.type === "add" && e.sectionId === sectionId && e.roleName === roleName && e.name === name);
+    if (addIdx >= 0) {
+      const next = pending.slice();
+      next[addIdx] = { ...next[addIdx], note };
+      this.savePending(next);
+      return;
+    }
+    const baseRole = this.state.sections.find(s => s.id === sectionId)?.roles.find(r => r.name === roleName);
+    const entry = baseRole?.mons.find(m => this.monName(m) === name);
+    const baseNote = entry ? this.monNote(entry) : "";
+    let next = pending.filter(e => !(e.type === "note" && e.sectionId === sectionId && e.roleName === roleName && e.name === name));
+    if (note !== baseNote) next = [...next, { type: "note", sectionId, roleName, name, note }];
+    this.savePending(next);
   }
 
   discardAll() {
     if (!this.state.pendingEdits.length) return;
-    if (!confirm("Discard all " + this.state.pendingEdits.length + " pending change(s)?")) return;
-    this.savePending([]);
+    this.confirmModal({
+      title: "Discard all changes?",
+      body: "This clears all " + this.state.pendingEdits.length + " staged change(s). It can't be undone.",
+      confirmLabel: "Discard all", danger: true,
+      onConfirm: () => { this.savePending([]); this.setState({ sel: null, noteDraft: "" }); this.showToast("All changes discarded"); },
+    });
   }
+
+  // ---- Modal / toast no estilo do projeto (substituem confirm/alert nativos) ----
+  confirmModal(cfg) { this.setState({ modal: cfg }); }
+  closeModal() { this.setState({ modal: null }); }
+  showToast(msg) {
+    this.setState({ toast: msg });
+    clearTimeout(this._toastT);
+    this._toastT = setTimeout(() => this.setState({ toast: null }), 2400);
+  }
+
+  exitEdit() { window.location.href = location.pathname + location.hash; }
 
   buildChangelog() {
     if (!this.state.pendingEdits.length) return "No pending changes.";
-    const titleFor = (sectionId) => (this.state.sections.find(s => s.id === sectionId) || {}).title || sectionId;
+    const titleFor = (id) => (this.state.sections.find(s => s.id === id) || {}).title || id;
     return this.state.pendingEdits.map(e => {
-      const sign = e.type === "add" ? "+" : "-";
-      const label = e.note ? `${e.name} (${e.note})` : e.name;
-      return `${sign} ${label} → ${e.roleName} (${titleFor(e.sectionId)})`;
+      const where = `${e.roleName} (${titleFor(e.sectionId)})`;
+      if (e.type === "add") return `+ ${e.note ? `${e.name} (${e.note})` : e.name} -> ${where}`;
+      if (e.type === "remove") return `- ${e.name} -> ${where}`;
+      return `~ ${e.name} note: ${e.note ? `"${e.note}"` : "(cleared)"} -> ${where}`;
     }).join("\n");
+  }
+
+  changeCounts() {
+    const c = { add: 0, remove: 0, note: 0 };
+    for (const e of this.state.pendingEdits) c[e.type === "add" ? "add" : e.type === "remove" ? "remove" : "note"]++;
+    return c;
+  }
+
+  printGroups() {
+    const pending = this.state.pendingEdits;
+    if (!pending.length) return [];
+    const bySection = new Map();
+    for (const e of pending) {
+      const secTitle = (this.state.sections.find(s => s.id === e.sectionId) || {}).title || e.sectionId;
+      if (!bySection.has(e.sectionId)) bySection.set(e.sectionId, { title: secTitle, roles: new Map() });
+      const roles = bySection.get(e.sectionId).roles;
+      if (!roles.has(e.roleName)) roles.set(e.roleName, []);
+      roles.get(e.roleName).push(e);
+    }
+    return [...bySection.values()].map(sec => ({
+      title: sec.title,
+      roles: [...sec.roles.entries()].map(([roleName, edits]) => ({
+        name: roleName,
+        mons: edits.map(e => ({
+          name: e.name,
+          url: this.url(e.name),
+          sign: e.type === "add" ? "+" : (e.type === "remove" ? "−" : "~"),
+          signClass: e.type === "add" ? "add" : (e.type === "remove" ? "remove" : "edit"),
+          note: e.type === "remove" ? "" : (e.note || ""),
+        })),
+      })),
+    }));
   }
 
   serializeMon(m) {
@@ -300,7 +649,7 @@ class Component extends DCLogic {
 
   async copyChangelog() {
     await navigator.clipboard.writeText(this.buildChangelog());
-    alert("Changelog copied!");
+    this.showToast("Change list copied to clipboard");
   }
 
   async copyUpdatedFile() {
@@ -314,14 +663,12 @@ class Component extends DCLogic {
     const endIdx = raw.indexOf("\n];", startIdx) + 3;
     const updated = raw.slice(0, startIdx) + this.serializeSections(this.data()) + raw.slice(endIdx);
     await navigator.clipboard.writeText(updated);
-    // Se as pendências continuarem salvas depois que o arquivo for aplicado, a
-    // próxima sessão de edição reaplica tudo de novo em cima do arquivo já
-    // atualizado → Pokémon duplicado. Por isso perguntamos aqui, no momento em
-    // que o "resultado final" é gerado, em vez de exigir lembrar de clicar em
-    // "Discard all" depois.
-    if (confirm("roles-data.js copied! Paste it over the file and commit it.\n\nOnce that's done, click OK to clear your pending changes here (so they don't get added again next time you edit). Click Cancel to keep them staged for now.")) {
-      this.savePending([]);
-    }
+    this.confirmModal({
+      title: "roles-data.js copied",
+      body: "Paste it over roles-data.js and commit. Then clear your staged changes here so they aren't applied twice next time you edit.",
+      confirmLabel: "Clear staged changes", cancelLabel: "Keep them",
+      onConfirm: () => { this.savePending([]); this.setState({ exportOpen: false, sel: null, noteDraft: "" }); this.showToast("Staged changes cleared"); },
+    });
   }
 
   monRoleMap() {
@@ -340,9 +687,39 @@ class Component extends DCLogic {
     return map;
   }
 
-  tileStyle(dim) {
-    return "position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;width:72px;padding:9px 4px 8px;background:#f7f3ea;border:1px solid #ded6c6;cursor:pointer;transition:transform .14s ease,border-color .14s,background .14s,opacity .18s;font-family:inherit;" +
-      (dim ? "opacity:.16;pointer-events:none;" : "");
+  // ---- estilos de tile por status (base / added / removed / edited) ----
+  tileStyle(status, dim) {
+    const b = "position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;width:72px;padding:9px 4px 8px;cursor:pointer;transition:transform .14s ease,border-color .14s,background .14s,opacity .18s;font-family:inherit;";
+    const skin = {
+      base: "background:#f7f3ea;border:1px solid #ded6c6;",
+      added: "background:#eef4ec;border:1.5px solid #2e7d32;",
+      removed: "background:#f8e8e3;border:1.5px solid #cf3a22;opacity:.9;",
+      edited: "background:#f7f3ea;border:1.5px solid #1b1917;",
+    }[status] || "background:#f7f3ea;border:1px solid #ded6c6;";
+    return b + skin + (dim ? "opacity:.16;pointer-events:none;" : "");
+  }
+  hoverFor(status) {
+    if (status === "added") return "transform:translateY(-3px);border-color:#2e7d32;background:#fff;";
+    return "transform:translateY(-3px);border-color:#cf3a22;background:#fff;";
+  }
+  nameStyle(status) {
+    const s = "font-family:'Space Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1;";
+    return s + (status === "removed" ? "color:#cf3a22;text-decoration:line-through;" : "color:#7a7263;");
+  }
+  noteStyle(status) {
+    const s = "font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;max-width:66px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1;";
+    return s + (status === "added" ? "color:#2e7d32;" : "color:#cf3a22;") + (status === "removed" ? "text-decoration:line-through;" : "");
+  }
+  badgeFor(status) {
+    const map = { added: ["NEW", "#2e7d32"], removed: ["CUT", "#cf3a22"], edited: ["NOTE", "#1b1917"] };
+    const b = map[status];
+    if (!b) return null;
+    return { text: b[0], style: `position:absolute;top:-8px;left:-8px;padding:1px 5px;font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;letter-spacing:.06em;color:#fff;background:${b[1]};border:1.5px solid #f1ece1;line-height:1.35;` };
+  }
+  cornerFor(status) {
+    const red = "position:absolute;top:-7px;right:-7px;width:18px;height:18px;border-radius:50%;background:#cf3a22;color:#f1ece1;border:1.5px solid #f1ece1;font-family:'Space Mono',monospace;font-size:10px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;";
+    if (status === "removed") return { label: "↺", title: "Undo remove", style: red.replace("#cf3a22", "#2e7d32") };
+    return { label: "✕", title: "Remove", style: red };
   }
   chipStyle(active) {
     return "font-family:'Space Mono',monospace;font-size:12px;font-weight:" + (active ? "700" : "400") +
@@ -354,52 +731,108 @@ class Component extends DCLogic {
   renderVals() {
     const q = this.state.q.trim().toLowerCase();
     const cat = this.state.cat;
-    const all = this.data();
     const editMode = this.state.editMode;
     const pending = this.state.pendingEdits;
+    const cleanAll = this.data();
+    const sel = this.state.sel;
+    const dragging = !!this.state.dragKey;
 
-    const cats = [{ id:"all", title:"All" }, ...all.map(s => ({ id: s.id, title: s.title }))].map(c => ({
+    const cats = [{ id: "all", title: "All" }, ...cleanAll.map(s => ({ id: s.id, title: s.title }))].map(c => ({
       title: c.title,
       style: this.chipStyle(cat === c.id),
       onClick: () => this.setState({ cat: c.id }),
     }));
 
     let totalShown = 0;
-    const sections = all
+    const mkMon = (s, r, name, dispNote, status, isPendingAdd) => {
+      const dim = q && !name.toLowerCase().includes(q);
+      if (!dim && status !== "removed") totalShown++;
+      const badge = this.badgeFor(status);
+      const corner = this.cornerFor(status);
+      const key = s.id + "|" + r.name + "|" + name;
+      const isSel = editMode && sel && sel.sectionId === s.id && sel.roleName === r.name && sel.name === name;
+      const isDragSrc = this.state.dragKey === key;
+      return {
+        name, note: dispNote, url: this.url(name), dim, editMode,
+        draggable: editMode && status !== "removed",
+        tileStyle: this.tileStyle(status, dim) + (isSel ? "outline:2.5px solid #1b1917;outline-offset:2px;" : "") + (isDragSrc ? "opacity:.4;" : ""),
+        hover: this.hoverFor(status),
+        nameStyle: this.nameStyle(status),
+        noteStyle: this.noteStyle(status),
+        badgeText: badge ? badge.text : "",
+        badgeStyle: badge ? badge.style : "",
+        cornerLabel: corner.label, cornerTitle: corner.title, cornerStyle: corner.style,
+        cornerClick: (e) => { e.stopPropagation(); if (status === "removed") this.undoRemove(s.id, r.name, name); else this.removeMon(s.id, r.name, name, isPendingAdd); },
+        onClick: () => {
+          if (!editMode) { this.openMon(name); return; }
+          if (status === "removed") { this.undoRemove(s.id, r.name, name); return; }
+          this.selectCard(s.id, r.name, name, isPendingAdd);
+        },
+        onDragStart: (e) => {
+          this._drag = { sectionId: s.id, roleName: r.name, name, note: dispNote, isPendingAdd };
+          try { e.dataTransfer.effectAllowed = "copyMove"; e.dataTransfer.setData("text/plain", name); } catch (_) {}
+          this.setState({ dragKey: key });
+        },
+        onDragEnd: () => { this._drag = null; this.setState({ dragKey: null, dropKey: null }); },
+      };
+    };
+
+    const sections = this.state.sections
       .map((s, i) => {
         let secHasMatch = false;
         const roles = s.roles.map(r => {
           const roleKey = s.id + "|" + r.name;
-          const mons = r.mons.map(entry => {
-            const name = this.monName(entry), note = this.monNote(entry);
-            const dim = q && !name.toLowerCase().includes(q);
-            if (!dim) { secHasMatch = true; totalShown++; }
-            const isPendingAdd = editMode && pending.some(e => e.type === "add" && e.sectionId === s.id && e.roleName === r.name && e.name === name);
-            return {
-              name, note, url: this.url(name), dim,
-              tileStyle: this.tileStyle(dim),
-              onClick: () => this.openMon(name),
-              editMode, isPendingAdd,
-              removeClick: (e) => { e.stopPropagation(); this.removeMon(s.id, r.name, name, isPendingAdd); },
-            };
-          });
+          const removeSet = editMode ? new Set(pending.filter(e => e.type === "remove" && e.sectionId === s.id && e.roleName === r.name).map(e => e.name)) : new Set();
+          const noteMap = {};
+          if (editMode) pending.filter(e => e.type === "note" && e.sectionId === s.id && e.roleName === r.name).forEach(e => { noteMap[e.name] = e.note; });
+          const adds = editMode ? pending.filter(e => e.type === "add" && e.sectionId === s.id && e.roleName === r.name) : [];
+
+          const mons = [];
+          for (const entry of r.mons) {
+            const name = this.monName(entry), baseNote = this.monNote(entry);
+            const removed = removeSet.has(name);
+            const hasNote = (name in noteMap) && noteMap[name] !== baseNote;
+            const dispNote = (name in noteMap) ? noteMap[name] : baseNote;
+            const status = removed ? "removed" : (hasNote ? "edited" : "base");
+            const m = mkMon(s, r, name, dispNote, status, false);
+            if (!m.dim) secHasMatch = true;
+            mons.push(m);
+          }
+          for (const e of adds) {
+            const m = mkMon(s, r, e.name, e.note || "", "added", true);
+            if (!m.dim) secHasMatch = true;
+            mons.push(m);
+          }
+
+          const hasSel = editMode && sel && sel.sectionId === s.id && sel.roleName === r.name;
+          const isDrop = this.state.dropKey === roleKey;
           return {
-            name: r.name, move: r.move, mons,
-            editMode, isAdding: editMode && this.state.addingKey === roleKey,
+            name: r.name, move: r.move, mons, editMode,
+            gridStyle: "display:flex;flex-wrap:wrap;gap:7px;outline:1.5px dashed " + (isDrop ? "#cf3a22" : (dragging ? "#d3c8b4" : "transparent")) + ";outline-offset:5px;background:" + (isDrop ? "rgba(207,58,34,.05)" : "transparent") + ";transition:background .12s,outline-color .12s;",
+            onDragOver: (e) => { if (!this.state.dragKey) return; e.preventDefault(); try { e.dataTransfer.dropEffect = (e.altKey || e.ctrlKey) ? "copy" : "move"; } catch (_) {} if (this.state.dropKey !== roleKey) this.setState({ dropKey: roleKey }); },
+            onDragLeave: (e) => { if (this.state.dropKey === roleKey && !e.currentTarget.contains(e.relatedTarget)) this.setState({ dropKey: null }); },
+            onDrop: (e) => { e.preventDefault(); this.handleDrop(s.id, r.name, e.altKey || e.ctrlKey); },
+            isAdding: editMode && this.state.addingKey === roleKey,
             addOpenClick: () => this.setState({ addingKey: roleKey, addName: "", addNote: "" }),
             addCancelClick: () => this.setState({ addingKey: null, addName: "", addNote: "" }),
             addConfirmClick: () => this.addMon(s.id, r.name, this.state.addName, this.state.addNote),
-            addKeyDown: (e) => { if (e.key === "Enter") { e.preventDefault(); this.addMon(s.id, r.name, this.state.addName, this.state.addNote); } },
+            addKeyDown: (e) => { if (e.key === "Enter") { e.preventDefault(); this.addMon(s.id, r.name, this.state.addName, this.state.addNote); } if (e.key === "Escape") this.setState({ addingKey: null, addName: "", addNote: "" }); },
             addName: this.state.addName,
             setAddName: (e) => this.setState({ addName: e.target.value }),
             addNote: this.state.addNote,
             setAddNote: (e) => this.setState({ addNote: e.target.value }),
+            hasSel: !!hasSel,
+            selName: hasSel ? sel.name : "",
+            noteDraft: this.state.noteDraft,
+            setNoteDraft: (e) => this.setState({ noteDraft: e.target.value }),
+            noteDraftKeyDown: (e) => { if (e.key === "Enter") { e.preventDefault(); this.saveSelNote(); } },
+            selSaveNote: () => this.saveSelNote(),
+            selCopyTo: () => this.openCopyPicker(),
+            selRemove: () => this.removeSelected(),
+            selDeselect: () => this.setState({ sel: null, noteDraft: "" }),
           };
         });
-        return {
-          id: s.id, title: s.title, num: String(i + 1).padStart(2, "0"), roles,
-          sub: s.roles.length + " roles", _match: secHasMatch,
-        };
+        return { id: s.id, title: s.title, num: String(i + 1).padStart(2, "0"), roles, sub: s.roles.length + " roles", _match: secHasMatch };
       })
       .filter(s => cat === "all" || s.id === cat)
       .filter(s => !q || s._match);
@@ -410,13 +843,19 @@ class Component extends DCLogic {
     if (this.state.selected) {
       const name = this.state.selected;
       const m = this.monRoleMap()[name] || {};
-      const groups = all.filter(s => m[s.id]).map(s => ({
+      const groups = cleanAll.filter(s => m[s.id]).map(s => ({
         title: m[s.id].title.toUpperCase(),
         roles: m[s.id].roles.map(x => x.note ? (x.role + " · " + x.note) : x.role),
       }));
       const rc = groups.reduce((n, g) => n + g.roles.length, 0);
       selected = { name, url: this.url(name), groups, roleCount: rc + " roles · " + groups.length + " categories" };
     }
+
+    const pc = pending.length;
+    const c = this.changeCounts();
+
+    const dangerBtn = "background:#cf3a22;border:1.5px solid #cf3a22;color:#f1ece1;padding:9px 16px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;";
+    const primaryBtn = "background:#1b1917;border:1.5px solid #1b1917;color:#f1ece1;padding:9px 16px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;";
 
     return {
       q: this.state.q,
@@ -428,14 +867,35 @@ class Component extends DCLogic {
       closeDetail: () => this.setState({ selected: null }),
       editMode,
       monNames: this.allMonNames(),
-      pendingCount: pending.length,
+      pendingCount: pc,
+      hasPending: pc > 0,
+      pendingLabel: pc === 0 ? "No changes yet" : (pc + " pending change" + (pc === 1 ? "" : "s")),
+      printSummary: pc === 0 ? "Nothing staged yet." : (c.add + " added · " + c.remove + " removed · " + c.note + " note " + (c.note === 1 ? "change" : "changes")),
       discardClick: () => this.discardAll(),
+      exitClick: () => this.exitEdit(),
+      copyPicker: this._copyPickerVals(cleanAll),
+      showEditBtn: !editMode,
+      enterEditClick: () => { window.location.href = location.pathname + "?edit=1"; },
       exportClick: () => this.setState({ exportOpen: true }),
       closeExport: () => this.setState({ exportOpen: false }),
       exportOpen: this.state.exportOpen,
       changelog: this.buildChangelog(),
       copyChangelogClick: () => this.copyChangelog(),
       copyFileClick: () => this.copyUpdatedFile(),
+      printGroups: this.printGroups(),
+      printDate: new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }),
+      printClick: () => window.print(),
+      stop: (e) => e.stopPropagation(),
+      toast: this.state.toast,
+      modal: this.state.modal ? {
+        title: this.state.modal.title,
+        body: this.state.modal.body,
+        confirmLabel: this.state.modal.confirmLabel || "Confirm",
+        cancelLabel: this.state.modal.cancelLabel || "Cancel",
+        confirmStyle: this.state.modal.danger ? dangerBtn : primaryBtn,
+        confirmClick: () => { const f = this.state.modal && this.state.modal.onConfirm; this.closeModal(); if (f) f(); },
+        cancelClick: () => this.closeModal(),
+      } : null,
       onImgLoad: (e) => { e.target.dataset.st = "done"; this.pump(); },
       onImgError: (e) => {
         const img = e.target;
@@ -457,7 +917,7 @@ class Component extends DCLogic {
 
   pump() {
     const CONC = 16;
-    const STALL = 9000; // ms: um load que passa disso (ex.: aba ficou escondida) é reiniciado
+    const STALL = 9000; // ms: um load que passa disso (ex.: aba escondida) é reiniciado
     const now = Date.now();
     const imgs = document.querySelectorAll('img[data-url]');
     let loading = 0;
@@ -472,13 +932,10 @@ class Component extends DCLogic {
       }
       const st = img.dataset.st;
       if (st === "loading") {
-        // terminou de fato mas o onLoad não disparou (voltou de aba escondida)
         if (img.complete && img.naturalWidth > 0) { img.dataset.st = "done"; return; }
-        // travou tempo demais → libera para recarregar
         if (now - (parseInt(img.dataset.t0 || "0", 10)) > STALL) { img.dataset.st = ""; return; }
         loading++;
       } else if (st === "done" && !img.src.startsWith("data:") && img.complete && img.naturalWidth === 0) {
-        // marcado done mas o pixel sumiu (cache descartado) → recarrega
         img.dataset.st = "";
       }
     });
@@ -494,6 +951,37 @@ class Component extends DCLogic {
     }
   }
 
+  _copyPickerVals(cleanAll) {
+    const cp = this.state.copyPicker;
+    if (!cp) return null;
+    const q = this.state.copyPickerQ.trim().toLowerCase();
+    const rowBase = "display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;background:none;border:none;padding:9px 24px;font-family:'Space Grotesk',system-ui,sans-serif;font-size:14px;cursor:pointer;color:#1b1917;";
+    let total = 0;
+    const groups = cleanAll.map(s => {
+      const roles = s.roles
+        .filter(r => !q || r.name.toLowerCase().includes(q) || s.title.toLowerCase().includes(q))
+        .map(r => {
+          const hasIt = this._roleHasMon(this.state.pendingEdits, s.id, r.name, cp.name);
+          const isFrom = s.id === cp.fromSection && r.name === cp.fromRole;
+          const disabled = hasIt || isFrom;
+          total++;
+          return {
+            name: r.name, hasIt, disabled,
+            style: rowBase + (disabled ? "color:#b0a794;cursor:default;" : ""),
+            hover: disabled ? "" : "background:#e6dece;color:#cf3a22;",
+            onClick: () => { if (!disabled) this.pickCopyTarget(s.id, r.name); },
+          };
+        });
+      return { title: s.title, roles };
+    }).filter(g => g.roles.length);
+    return {
+      name: cp.name, q: this.state.copyPickerQ,
+      setQ: (e) => this.setState({ copyPickerQ: e.target.value }),
+      groups, empty: total === 0,
+      close: () => this.closeCopyPicker(),
+    };
+  }
+
   openMon(name) { this.setState({ selected: name }); }
 
   placeholder() {
@@ -503,19 +991,33 @@ class Component extends DCLogic {
   async componentDidMount() {
     const m = await import("./roles-data.js");
     // Modo de edição escondido: só liga com ?edit=1 na URL. Sem link nenhum na UI.
-    const editMode = new URLSearchParams(location.search).get("edit") === "1";
+    const editMode = new URLSearchParams(location.search).get("edit") === "1" || /(^|[#&])edit(=1)?($|&)/.test(location.hash);
     let pendingEdits = [];
     try { pendingEdits = JSON.parse(localStorage.getItem(EDIT_STORAGE_KEY) || "[]"); } catch {}
     this.setState({ sections: m.SECTIONS, slugs: m.SPRITE_SLUGS, base: m.SPRITE_BASE, editMode, pendingEdits });
     this.pump();
     this._pumpTimer = setInterval(() => this.pump(), 700);
-    // Ao voltar para a aba, revalida sprites que possam ter travado enquanto escondida.
     this._onVis = () => { if (!document.hidden) this.pump(); };
     document.addEventListener("visibilitychange", this._onVis);
+    // Imagens do bloco de impressão guardam a URL em data-purl (nunca em src, pra
+    // não disparar um fetch do hole literal durante o stream). Só na hora de
+    // imprimir preenchemos o src de verdade.
+    this._onBeforePrint = () => {
+      document.querySelectorAll("#printChanges img[data-purl]").forEach(img => {
+        const u = img.getAttribute("data-purl") || "";
+        if (u.startsWith("http") && img.getAttribute("src") !== u) img.src = u;
+      });
+    };
+    window.addEventListener("beforeprint", this._onBeforePrint);
+    this._onKey = (e) => this.onKey(e);
+    document.addEventListener("keydown", this._onKey);
   }
   componentWillUnmount() {
     clearInterval(this._pumpTimer);
+    clearTimeout(this._toastT);
     document.removeEventListener("visibilitychange", this._onVis);
+    window.removeEventListener("beforeprint", this._onBeforePrint);
+    document.removeEventListener("keydown", this._onKey);
   }
 }
 </script>

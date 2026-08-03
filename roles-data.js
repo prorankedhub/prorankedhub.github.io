@@ -31,23 +31,25 @@
 
 export const SECTIONS = [
   { id: "hazards", title: "Entry Hazards", tag: "HAZARDS", roles: [
-    { name: "Stealth Rock", move: "Stealth Rock", mons: ["Landorus-Therian", "Clefable", "Mega Diancie", "Ferrothorn", "Garchomp", "Gliscor", "Heatran", "Clodsire", "Excadrill", "Chansey", "Kommo-o", "Mega Tyranitar", "Hippowdon", "Jirachi", "Mew", "Mega Swampert", "Mega Garchomp", "Bronzong", "Mega Aggron"] },
+    { name: "Stealth Rock", move: "Stealth Rock", mons: ["Landorus-Therian", "Clefable", "Mega Diancie", "Ferrothorn", "Garchomp", "Gliscor", "Heatran", "Clodsire", "Excadrill", "Chansey", "Kommo-o", "Mega Tyranitar", "Hippowdon", "Jirachi", "Mew", "Mega Swampert", "Mega Garchomp", "Bronzong", "Mega Aggron", "Tinkaton", "Mamoswine", "Uxie", "Kleavor", "Seismitoad", "Registeel"] },
     { name: "Spikes", move: "Spikes", mons: ["Ferrothorn", "Samurott-Hisui", "Skarmory", "Greninja"] },
-    { name: "Toxic Spikes", move: "Toxic Spikes", mons: ["Clodsire", "Gliscor", "Greninja", "Toxapex"] },
+    { name: "Toxic Spikes", move: "Toxic Spikes", mons: ["Clodsire", "Gliscor", "Greninja", "Toxapex", "Gengar", "Cofagrigus"] },
     { name: "Sticky Web", move: "Sticky Web", mons: ["Ribombee", "Araquanid", "Shuckle", "Smeargle"] },
   ] },
 
   { id: "control", title: "Hazard Control", tag: "CONTROL", roles: [
-    { name: "Defog", move: "Defog", mons: ["Landorus-Therian", "Tornadus-Therian", "Zapdos", "Corviknight", "Gliscor", "Serperior", "Skarmory", "Mega Scizor", "Rotom-Wash", "Moltres", "Hydreigon", "Latias", "Pelipper", "Mega Altaria", "Mew", "Mandibuzz", "Thundurus-Therian", "Mantine"] },
+    { name: "Defog", move: "Defog", mons: ["Landorus-Therian", "Tornadus-Therian", "Zapdos", "Corviknight", "Gliscor", "Serperior", "Skarmory", "Mega Scizor", "Rotom-Wash", "Moltres", "Hydreigon", "Latias", "Pelipper", "Mega Altaria", "Mew", "Mandibuzz", "Thundurus-Therian", "Mantine", "Latios"] },
     { name: "Rapid Spin", move: "Rapid Spin", mons: ["Excadrill", "Torkoal"] },
     { name: "Magic Bounce", move: "Ability", mons: ["Mega Diancie", "Hatterene", "Mega Sableye"] },
   ] },
 
   { id: "utility", title: "Utility & Support", tag: "UTILITY", roles: [
-    { name: "Encore", move: "Encore", mons: ["Clefable", "Mega Lopunny", "Samurott-Hisui"] },
-    { name: "Knock Off", move: "Knock Off", mons: ["Landorus-Therian", "Tornadus-Therian", "Clefable", "Ferrothorn", "Gliscor", "Mega Mawile", "Serperior", "Bisharp", "Tyranitar", "Samurott-Hisui", "Mega Scizor", "Weavile", "Azumarill", "Hoopa-Unbound", "Mega Tyranitar", "Mega Sableye", "Tangrowth", "Mega Gallade", "Mew", "Pelipper", "Crawdaunt", "Muk-Alola", "Toxapex"] },
-    { name: "Taunt", move: "Taunt", mons: ["Landorus-Therian", "Tornadus-Therian", "Gliscor", "Heatran", "Serperior", "Skarmory", "Keldeo", "Mega Gyarados", "Kommo-o", "Mew", "Thundurus-Therian", "Gyarados", "Hawlucha", "Mega Aerodactyl"] },
-    { name: "Trick / Switcheroo", move: "Trick", mons: ["Clefable", "Latios", "Victini", "Blacephalon", "Rotom-Wash", "Jirachi", "Greninja", "Latias"] },
+    { name: "Encore", move: "Encore", mons: ["Clefable", "Mega Lopunny", "Samurott-Hisui", "Tinkaton"] },
+    { name: "Knock Off", move: "Knock Off", mons: ["Landorus-Therian", "Tornadus-Therian", "Clefable", "Ferrothorn", "Gliscor", "Mega Mawile", "Serperior", "Bisharp", "Tyranitar", "Samurott-Hisui", "Mega Scizor", "Weavile", "Azumarill", "Hoopa-Unbound", "Mega Tyranitar", "Mega Sableye", "Tangrowth", "Mega Gallade", "Mew", "Pelipper", "Crawdaunt", "Muk-Alola", "Toxapex", "Diggersby", "Mandibuzz", "Tinkaton"] },
+    { name: "Taunt", move: "Taunt", mons: ["Landorus-Therian", "Tornadus-Therian", "Gliscor", "Heatran", "Serperior", "Skarmory", "Keldeo", "Mega Gyarados", "Kommo-o", "Mew", "Thundurus-Therian", "Gyarados", "Hawlucha", "Mega Aerodactyl", "Azelf"] },
+    { name: "Trick / Switcheroo", move: "Trick", mons: ["Clefable", "Latios", "Victini", "Blacephalon", "Rotom-Wash", "Jirachi", "Greninja", "Latias", "Sneasler", "Togekiss"] },
+    { name: "Endeavor", move: "Endeavor", mons: ["Diancie", "Mamoswine"] },
+    { name: "Substitute", move: "Substitute", mons: ["Serperior", "Volcarona", "Diancie", "Garchomp"] },
   ] },
 
   { id: "attackers", title: "Attackers", tag: "ATTACKERS", roles: [
