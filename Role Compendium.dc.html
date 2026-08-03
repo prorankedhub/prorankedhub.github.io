@@ -30,9 +30,12 @@
      #appShell (o app todo) some no print pra não sobrar páginas em branco. */
   #printChanges { display: none; }
   @media print {
-    @page { margin: 15mm; }
+    @page { margin: 10mm; }
     #appShell { display: none !important; }
-    #printChanges { display: block; }
+    /* Padding próprio além do @page: navegador pode ignorar a margem do @page
+       (ex.: opção "Margens: Nenhuma" no diálogo de impressão), então garantimos
+       respiro mesmo assim. */
+    #printChanges { display: block; padding: 10mm 8mm 16mm; }
   }
   #printChanges { font-family: 'Space Grotesk', system-ui, sans-serif; color: #1b1917; }
   #printChanges .masthead { border-top: 6px solid #cf3a22; padding-top: 14px; margin-bottom: 20px; }
@@ -61,17 +64,42 @@
   #printChanges .print-tile.add .badge { background: #2e7d32; }
   #printChanges .print-tile.remove .badge { background: #cf3a22; }
   #printChanges .print-tile.edit .badge { background: #1b1917; }
+
+  .preview-row:last-child { border-bottom: none !important; }
+
+  /* ---- Responsivo / mobile: inline style não faz media query, então o pouco
+     que precisa reflow no celular vem por classe aqui. ---- */
+  @media (max-width: 680px) {
+    #appShell { padding-bottom: 128px !important; }
+    /* menos respiro lateral em todos os containers de 1180px */
+    [style*="max-width: 1180px"] { padding-left: 16px !important; padding-right: 16px !important; }
+    /* topo: categorias e busca empilham */
+    .topbar-row { flex-direction: column !important; gap: 0 !important; }
+    .cat-nav { min-width: 0 !important; width: 100%; flex-wrap: nowrap !important; overflow-x: auto; gap: 18px !important; padding: 11px 0 9px !important; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .cat-nav::-webkit-scrollbar { display: none; }
+    .cat-nav button { white-space: nowrap; flex-shrink: 0; padding-bottom: 6px !important; }
+    .search-box { width: 100%; gap: 12px !important; padding: 9px 0 12px !important; border-top: 1px solid #cdc3af; }
+    .search-box > div:first-child { flex: 1; }
+    .search-box input { width: 100% !important; }
+    /* barra de edição: botões podem quebrar linha */
+    .editbar-row { flex-wrap: wrap !important; gap: 8px 10px !important; padding: 10px 16px !important; }
+    .editbar-row .eb-spacer { flex-basis: 100%; height: 0; }
+    /* títulos de seção um tom menores */
+    .sec-head h2 { font-size: 25px !important; }
+    .sec-head .sec-num { font-size: 24px !important; }
+    .sec-head .sec-sub { display: none; }
+  }
 </style>
 </helmet>
 <div id="appShell" style="min-height: 100vh; background: #f1ece1; color: #1b1917; font-family: 'Space Grotesk', system-ui, sans-serif; padding-bottom: 90px;">
 
   <sc-if value="{{ editMode }}" hint-placeholder-val="{{ false }}">
     <div style="position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: #cf3a22; color: #f1ece1; border-top: 1.5px solid #1b1917;">
-      <div style="max-width: 1180px; margin: 0 auto; padding: 11px 40px; display: flex; align-items: center; gap: 14px; font-family: 'Space Mono', monospace; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase;">
+      <div class="editbar-row" style="max-width: 1180px; margin: 0 auto; padding: 11px 40px; display: flex; align-items: center; gap: 14px; font-family: 'Space Mono', monospace; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase;">
         <span style="font-weight: 700;">Edit mode</span>
         <span style="width: 1px; height: 13px; background: rgba(241,236,225,.5);"></span>
         <span>{{ pendingLabel }}</span>
-        <span style="flex: 1;"></span>
+        <span class="eb-spacer" style="flex: 1;"></span>
         <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
           <button onClick="{{ discardClick }}" style="background: none; border: 1.5px solid #f1ece1; color: #f1ece1; padding: 6px 14px; font-family: inherit; font-size: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer;" style-hover="background: #f1ece1; color: #cf3a22;">Discard</button>
           <button onClick="{{ exportClick }}" style="background: #1b1917; border: 1.5px solid #1b1917; color: #f1ece1; padding: 6px 14px; font-family: inherit; font-size: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer;" style-hover="background: #f1ece1; color: #1b1917;">Review &amp; export</button>
@@ -100,13 +128,13 @@
   </div>
 
   <div style="position: sticky; top: 0; z-index: 30; background: #f1ece1; border-top: 1.5px solid #1b1917; border-bottom: 1px solid #cdc3af;">
-    <div style="max-width: 1180px; margin: 0 auto; padding: 0 40px; display: flex; align-items: stretch; gap: 28px; flex-wrap: wrap;">
-      <nav style="flex: 1; min-width: 280px; display: flex; gap: 22px; flex-wrap: wrap; align-items: center; padding: 12px 0;">
+    <div class="topbar-row" style="max-width: 1180px; margin: 0 auto; padding: 0 40px; display: flex; align-items: stretch; gap: 28px; flex-wrap: wrap;">
+      <nav class="cat-nav" style="flex: 1; min-width: 280px; display: flex; gap: 22px; flex-wrap: wrap; align-items: center; padding: 12px 0;">
         <sc-for list="{{ cats }}" as="cat" hint-placeholder-count="7">
           <button onClick="{{ cat.onClick }}" style="{{ cat.style }}" style-hover="color: #1b1917;">{{ cat.title }}</button>
         </sc-for>
       </nav>
-      <div style="display: flex; align-items: center; gap: 18px; padding: 10px 0;">
+      <div class="search-box" style="display: flex; align-items: center; gap: 18px; padding: 10px 0;">
         <div style="position: relative; display: flex; align-items: center; border-bottom: 1.5px solid #1b1917;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1b1917" stroke-width="2.4" style="flex-shrink: 0;"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
           <input value="{{ q }}" onInput="{{ setQuery }}" placeholder="Search a Pokémon" spellcheck="false" style="width: 176px; background: transparent; border: none; color: #1b1917; font-size: 14px; font-family: 'Space Mono', monospace; padding: 8px 4px 8px 9px; outline: none;">
@@ -132,11 +160,11 @@
   <main style="max-width: 1180px; margin: 0 auto; padding: 4px 40px 0;">
     <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="4">
       <section style="padding: 40px 0 8px; border-bottom: 1px solid #cdc3af;">
-        <div style="display: flex; align-items: flex-end; gap: 18px; margin-bottom: 26px;">
-          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 30px; line-height: 1; color: #cf3a22; letter-spacing: -.02em;">{{ sec.num }}</span>
+        <div class="sec-head" style="display: flex; align-items: flex-end; gap: 18px; margin-bottom: 26px;">
+          <span class="sec-num" style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 30px; line-height: 1; color: #cf3a22; letter-spacing: -.02em;">{{ sec.num }}</span>
           <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 32px; line-height: .95; letter-spacing: -.025em;">{{ sec.title }}</h2>
           <span style="flex: 1; height: 1px; background: #cdc3af; margin-bottom: 7px;"></span>
-          <span style="font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #7a7263; margin-bottom: 3px; white-space: nowrap;">{{ sec.sub }}</span>
+          <span class="sec-sub" style="font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #7a7263; margin-bottom: 3px; white-space: nowrap;">{{ sec.sub }}</span>
         </div>
         <sc-for list="{{ sec.roles }}" as="role" hint-placeholder-count="4">
           <div style="margin: 0 0 26px;">
@@ -261,7 +289,19 @@
 
         <div style="display: flex; flex-direction: column; gap: 8px;">
           <span style="font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #7a7263;">Preview</span>
-          <textarea readonly style="width: 100%; min-height: 150px; background: #f7f3ea; border: 1px solid #ded6c6; padding: 10px; font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.6; resize: vertical; color: #1b1917;">{{ changelog }}</textarea>
+          <div style="max-height: 280px; overflow-y: auto; background: #f7f3ea; border: 1px solid #ded6c6;">
+            <sc-for list="{{ previewRows }}" as="row" hint-placeholder-count="3">
+              <div class="preview-row" style="display: flex; align-items: baseline; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #e5ddcc;">
+                <i style="{{ row.dotStyle }}"></i>
+                <span style="{{ row.nameStyle }}">{{ row.name }}</span>
+                <sc-if value="{{ row.note }}" hint-placeholder-val="">
+                  <span style="font-family: 'Space Mono', monospace; font-size: 11px; color: #7a7263; font-style: italic;">{{ row.note }}</span>
+                </sc-if>
+                <span style="flex: 1;"></span>
+                <span style="font-family: 'Space Mono', monospace; font-size: 9.5px; color: #7a7263; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap;">{{ row.where }}</span>
+              </div>
+            </sc-for>
+          </div>
         </div>
       </div>
     </aside>
@@ -315,7 +355,7 @@
   </sc-if>
 
   <footer style="max-width: 1180px; margin: 34px auto 0; padding: 0 40px; font-family: 'Space Mono', monospace; color: #7a7263; font-size: 11.5px; line-height: 1.7; letter-spacing: .02em;">
-    <p style="margin: 0;">Adapted from Smogon's SM OU Role Compendium, filtered for PRO availability — adjust the lists as the metagame shifts. Sprites from Smogon's Mystery Dungeon set. Click a Pokémon to see every role it fills.</p>
+    <p style="margin: 0;">Filtered for PRO availability — adjust the lists as the metagame shifts. Click a Pokémon to see every role it fills.</p>
     <sc-if value="{{ showEditBtn }}" hint-placeholder-val="{{ true }}">
       <button onClick="{{ enterEditClick }}" style="margin-top: 16px; background: none; border: 1.5px solid #cf3a22; color: #cf3a22; padding: 8px 16px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; cursor: pointer;" style-hover="background: #cf3a22; color: #f1ece1;">Edit the compendium →</button>
     </sc-if>
@@ -599,6 +639,25 @@ class Component extends DCLogic {
     }).join("\n");
   }
 
+  previewRows() {
+    const titleFor = (id) => (this.state.sections.find(s => s.id === id) || {}).title || id;
+    const dot = {
+      add: "width:8px;height:8px;border-radius:50%;flex-shrink:0;background:#2e7d32;",
+      remove: "width:8px;height:8px;border-radius:50%;flex-shrink:0;background:#cf3a22;",
+      note: "width:8px;height:8px;border-radius:50%;flex-shrink:0;background:none;border:1.5px solid #1b1917;",
+    };
+    return this.state.pendingEdits.map(e => {
+      const kind = e.type === "add" ? "add" : (e.type === "remove" ? "remove" : "note");
+      return {
+        dotStyle: dot[kind],
+        name: e.name,
+        nameStyle: "font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;" + (kind === "remove" ? "color:#cf3a22;text-decoration:line-through;" : "color:#1b1917;"),
+        note: kind === "remove" ? "" : (kind === "note" ? (e.note ? `note: "${e.note}"` : "note cleared") : (e.note || "")),
+        where: e.roleName + " · " + titleFor(e.sectionId),
+      };
+    });
+  }
+
   changeCounts() {
     const c = { add: 0, remove: 0, note: 0 };
     for (const e of this.state.pendingEdits) c[e.type === "add" ? "add" : e.type === "remove" ? "remove" : "note"]++;
@@ -879,7 +938,7 @@ class Component extends DCLogic {
       exportClick: () => this.setState({ exportOpen: true }),
       closeExport: () => this.setState({ exportOpen: false }),
       exportOpen: this.state.exportOpen,
-      changelog: this.buildChangelog(),
+      previewRows: this.previewRows(),
       copyChangelogClick: () => this.copyChangelog(),
       copyFileClick: () => this.copyUpdatedFile(),
       printGroups: this.printGroups(),
@@ -994,6 +1053,12 @@ class Component extends DCLogic {
     const editMode = new URLSearchParams(location.search).get("edit") === "1" || /(^|[#&])edit(=1)?($|&)/.test(location.hash);
     let pendingEdits = [];
     try { pendingEdits = JSON.parse(localStorage.getItem(EDIT_STORAGE_KEY) || "[]"); } catch {}
+    // Blinda contra entradas corrompidas salvas por versões antigas (ex.: "name"
+    // gravado como objeto { name, note } em vez de string) — sem isso o changelog
+    // mostra "[object Object]" no Preview do export até o usuário limpar o storage.
+    pendingEdits = pendingEdits
+      .map(e => ({ ...e, name: this.monName(e.name || ""), note: typeof e.note === "string" ? e.note : this.monName(e.note || "") }))
+      .filter(e => e.name);
     this.setState({ sections: m.SECTIONS, slugs: m.SPRITE_SLUGS, base: m.SPRITE_BASE, editMode, pendingEdits });
     this.pump();
     this._pumpTimer = setInterval(() => this.pump(), 700);

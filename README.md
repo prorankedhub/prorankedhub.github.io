@@ -2,7 +2,7 @@
 
 Uma lista visual e interativa de quais Pokémon cumprem cada papel no metagame de PRO OU (fila Ranked). Busca por Pokémon, filtro por categoria e um painel que mostra todos os papéis de um Pokémon ao clicar nele.
 
-Baseado no *SM OU Role Compendium* do Smogon, filtrado para a disponibilidade do PRO. Sprites do set Mystery Dungeon do Smogon.
+Filtrado para a disponibilidade do PRO.
 
 ---
 

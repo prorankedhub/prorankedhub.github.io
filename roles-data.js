@@ -136,12 +136,12 @@ export const SECTIONS = [
   ] },
 
   { id: "weather", title: "Weather", tag: "WEATHER", roles: [
-    { name: "Snow", move: "Snow Warning", mons: [{ name: "Slowking", note: "Chilly Reception" }, { name: "Ninetales-Alola", note: "Snow Warning" }] },
+    { name: "Snow Setters", move: "Snow Warning", mons: [{ name: "Slowking", note: "Chilly Reception" }, { name: "Ninetales-Alola", note: "Snow Warning" }] },
     { name: "Snow Abusers", move: "", mons: [{ name: "Kyurem", note: "Blizzard" }, { name: "Arctozolt", note: "Slush Rush" }] },
     { name: "Sand Setters", move: "Sand Stream", mons: [{ name: "Tyranitar", note: "Sand Stream" }, { name: "Mega Tyranitar", note: "Sand Stream" }, { name: "Hippowdon", note: "Sand Stream" }] },
     { name: "Sand Abusers", move: "", mons: [{ name: "Garchomp", note: "Sand Veil" }, { name: "Excadrill", note: "Sand Rush" }, { name: "Mega Garchomp", note: "Sand Force" }, { name: "Dracozolt", note: "Sand Rush" }] },
     { name: "Sun Setters", move: "Drought", mons: [{ name: "Mega Charizard Y", note: "Drought" }, { name: "Torkoal", note: "Drought" }, { name: "Ninetales", note: "Drought" }] },
-    { name: "Sun Abusers", move: "", mons: ["Heatran", "Victini", { name: "Cresselia", note: "Moonlight" }, { name: "Venusaur", note: "chlorophyll" }, "Lilligant-Hisui"] },
+    { name: "Sun Abusers", move: "", mons: ["Heatran", "Victini", { name: "Cresselia", note: "Moonlight" }, { name: "Venusaur", note: "chlorophyll" }, {name:"Lilligant-Hisui", note: "chlorophyll"}] },
     { name: "Rain Setter", move: "Drizzle", mons: [{ name: "Pelipper", note: "Drizzle" }] },
     { name: "Rain Abusers", move: "", mons: [{ name: "Tornadus-Therian", note: "Hurricane" }, { name: "Zapdos", note: "Hurricane" }, "Ferrothorn", { name: "Manaphy", note: "Hydration" }, "Azumarill", { name: "Mega Swampert", note: "Swift Swim" }, { name: "Kingdra", note: "Swift Swim" }, { name: "Araquanid", note: "Water Bubble" }, { name: "Barraskewda", note: "Swift Swim" }] },
   ] },
@@ -157,6 +157,14 @@ export const SECTIONS = [
     { name: "Poison", move: "", mons: [{ name: "Landorus-Therian", note: "Toxic" }, { name: "Garchomp", note: "Toxic" }, { name: "Gliscor", note: "Toxic" }, { name: "Heatran", note: "Toxic" }, { name: "Ferrothorn", note: "Toxic" }, { name: "Clodsire", note: "Toxic / Poison Jab" }, { name: "Excadrill", note: "Toxic" }, { name: "Slowbro", note: "Toxic" }, { name: "Chansey", note: "Toxic" }, { name: "Kommo-o", note: "Toxic" }, { name: "Mega Venusaur", note: "Toxic / Sludge Bomb" }, { name: "Hippowdon", note: "Toxic" }, { name: "Volcanion", note: "Toxic" }, { name: "Cresselia", note: "Toxic" }, { name: "Mega Swampert", note: "Toxic" }, { name: "Magnezone", note: "Toxic" }, { name: "Alomomola", note: "Toxic" }, { name: "Mega Slowbro", note: "Toxic" }, { name: "Gastrodon", note: "Toxic" }, { name: "Toxapex", note: "Toxic / Toxic Spikes / Baneful Bunker" }, { name: "Shedinja", note: "Toxic" }] },
     { name: "Sleep", move: "", mons: [{ name: "Mega Venusaur", note: "Sleep Powder" }, { name: "Tangrowth", note: "Sleep Powder" }, { name: "Amoonguss", note: "Spore" }, { name: "Breloom", note: "Spore" }] },
     { name: "Status Absorbers", move: "Ability", mons: [{ name: "Mega Diancie", note: "Magic Bounce" }, { name: "Clefable", note: "Magic Guard" }, { name: "Gliscor", note: "Poison Heal" }, { name: "Hatterene", note: "Magic Bounce" }, { name: "Manaphy", note: "Hydration" }, { name: "Ursaluna", note: "Guts" }, { name: "Chansey", note: "Natural Cure" }, { name: "Mega Sableye", note: "Magic Bounce" }, { name: "Reuniclus", note: "Magic Guard" }, { name: "Altaria", note: "Natural Cure" }] },
+  ] },
+
+  { id: "megas", title: "Megas", tag: "MEGAS", roles: [
+    { name: "Mega Evolutions", move: "", mons: ["Mega Diancie", "Mega Tyranitar", "Mega Swampert", "Mega Garchomp", "Mega Aggron", "Mega Scizor", "Mega Sableye", "Mega Lopunny", "Mega Mawile", "Mega Charizard X", "Mega Charizard Y", "Mega Gyarados", "Mega Medicham", "Mega Heracross", "Mega Pinsir", "Mega Gallade", "Mega Latios", "Mega Latias", "Mega Gardevoir", "Mega Altaria", "Mega Aerodactyl", "Mega Venusaur", "Mega Slowbro", "Mega Manectric"] },
+  ] },
+
+  { id: "speed", title: "Fast Mons", tag: "SPEED", roles: [
+    { name: "110+ Speed", move: "", mons: ["Mega Aerodactyl", "Dragapult", "Mega Manectric", "Mega Lopunny", "Sneasler", "Weavile", "Greninja", "Tornadus-Therian", "Serperior", "Latios", "Latias", "Mega Diancie", "Gengar"] },
   ] },
 ];
 
