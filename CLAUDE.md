@@ -1,29 +1,34 @@
 # CLAUDE.md — PRO Role Compendium
 
-Contexto persistente do projeto. Leia antes de editar.
+Persistent project context. Read before editing.
 
-## O que é
-Lista visual/interativa de papéis do metagame de **PRO OU** (Pokémon Revolution Online, fila **Ranked**). Baseado no SM OU Role Compendium do Smogon, filtrado para a disponibilidade do PRO. Sprites do set Mystery Dungeon do Smogon (`https://www.smogon.com/forums/media/pmd/<slug>.png`).
+## What it is
+A visual/interactive list of roles in the **PRO OU** metagame (Pokémon Revolution Online, **Ranked** queue). Based on Smogon's SM OU Role Compendium, filtered down to what's available in PRO. Sprites come from Smogon's Mystery Dungeon set (`https://www.smogon.com/forums/media/pmd/<slug>.png`).
 
-## Arquivos
-- `Role Compendium.dc.html` — o app (Design Component: template + lógica). Visual **editorial** (papel bege `#f1ece1`, tinta, vermelho tijolo `#cf3a22`; fontes Bricolage Grotesque / Space Grotesk / Space Mono).
-- `index.html` — **cópia idêntica** do app para GitHub Pages. Sempre que editar o `.dc.html`, copie por cima do `index.html`.
-- `roles-data.js` — **fonte única dos dados** (categorias, papéis, Pokémon, slugs). A lógica importa via `import("./roles-data.js")`.
-- `README.md` — guia de uso para o usuário final.
+## Files
+- `Role Compendium.dc.html` — the app (Design Component: template + logic). **Editorial** look (beige paper `#f1ece1`, ink, brick red `#cf3a22`; Bricolage Grotesque / Space Grotesk / Space Mono).
+- `index.html` — a **byte-identical copy** of the app, for GitHub Pages. Whenever you edit the `.dc.html`, copy it over `index.html`.
+  > The two are redundant on purpose: the user **works in the visual Design Component
+  > editor**, which only picks up `*.dc.html` files. Do not propose deleting the `.dc.html`.
+- `roles-data.js` — **the single source of data** (categories, roles, Pokémon, slugs). The logic pulls it in via `import("./roles-data.js")`.
+- `support.js` — tool-generated dc runtime (`<script src="./support.js">` in both HTML files). **Do not edit**; it isn't part of the app.
+- `README.md` — end-user guide.
 
-## Regras importantes
-- **Dados só no `roles-data.js`.** Nunca voltar a embutir a lista no `.dc.html` — o usuário edita os dados sozinho, sem gastar crédito.
-- **Sempre sincronizar `index.html`** após qualquer mudança no `Role Compendium.dc.html` (`copy_files` src→dest).
-- **Disponibilidade do PRO:** NÃO existem Tapus, Magearna nem Ultra Beasts (exceto **Blacephalon**). Não reintroduzir esses. Ao mexer em listas, respeitar o que existe no PRO.
-- **Manter o visual editorial.** O usuário testou uma versão retro e descartou. Não redesenhar sem pedido.
-- Idioma da UI: **inglês**. Comentários/docs para o usuário: **português**.
+That's all of it. The repo is deliberately lean: the source PDF and the `.thumbnail` preview were removed (the PDF is still recoverable from git history). Don't recreate them.
 
-## Formato dos dados (`roles-data.js`)
-- `SECTIONS`: array de `{ id, title, tag, roles: [...] }` — cada bloco é uma tab (ordem = ordem na tela; "All" é automática).
-- Papel: `{ name, move, mons: [...] }`.
-- Entrada de `mons`: `"Nome"` **ou** `{ name, note }` — o `note` mostra o move/ability específico com que aquele Pokémon executa o papel (etiqueta vermelha no tile + no drawer). Strings e objetos podem coexistir.
-- `SPRITE_SLUGS`: só formas cujo arquivo de sprite tem nome diferente do nome exibido.
+## Important rules
+- **Data lives only in `roles-data.js`.** Never inline the list back into the `.dc.html` — the user edits the data on their own, without spending credit.
+- **Always sync `index.html`** after any change to `Role Compendium.dc.html` (`copy_files` src→dest).
+- **PRO availability:** there are NO Tapus, no Magearna and no Ultra Beasts (except **Blacephalon**). Don't reintroduce them. When touching lists, respect what actually exists in PRO.
+- **Keep the editorial look.** The user tried a retro version and rejected it. Don't redesign unprompted.
+- Everything written in this repo — UI, docs, code comments, commit messages — is in **English**. Conversation with the user stays in Portuguese.
 
-## Detalhes técnicos a preservar
-- **Carregador de sprites** (`pump()` na lógica): concorrência limitada (16), retry com backoff, placeholder só em 404 real. Trata: aba escondida no meio do load (timeout 9s), cache descartado, e **reuso de `<img>` pelo React ao trocar de tab** (compara `src` com `data-url` e recarrega se divergir). Não simplificar sem manter esses casos.
-- Rodar exige servidor `http(s)` (o `import()` do módulo falha em `file://`). Documentado no README.
+## Data format (`roles-data.js`)
+- `SECTIONS`: array of `{ id, title, tag, roles: [...] }` — each block is a tab (order = on-screen order; "All" is automatic).
+- Role: `{ name, move, mons: [...] }`.
+- `mons` entry: `"Name"` **or** `{ name, note }` — `note` shows the specific move/ability that Pokémon uses to fill the role (red tag on the tile + in the drawer). Strings and objects can coexist.
+- `SPRITE_SLUGS`: only forms whose sprite file is named differently from the displayed name.
+
+## Technical details to preserve
+- **Sprite loader** (`pump()` in the logic): capped concurrency (16), retry with backoff, placeholder only on a real 404. It handles: the tab being hidden mid-load (9s timeout), discarded cache, and **React reusing an `<img>` when switching tabs** (compares `src` against `data-url` and reloads if they diverge). Don't simplify without keeping those cases covered.
+- Running it requires an `http(s)` server (the module `import()` fails under `file://`). Documented in the README.

@@ -25,16 +25,16 @@
   @keyframes modalIn { from { transform: translateY(10px) scale(.98); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
   @keyframes toastIn { from { transform: translate(-50%, 12px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
 
-  /* Impressão: #printChanges fica fora da tela (display:none) e só aparece
-     quando o navegador imprime — o "Save as PDF" do drawer de export.
-     #appShell (o app todo) some no print pra não sobrar páginas em branco. */
+  /* Printing: #printChanges stays off-screen (display:none) and only shows up
+     when the browser prints — that's the "Save as PDF" in the export drawer.
+     #appShell (the whole app) is hidden on print so no blank pages are left. */
   #printChanges { display: none; }
   @media print {
     @page { margin: 10mm; }
     #appShell { display: none !important; }
-    /* Padding próprio além do @page: navegador pode ignorar a margem do @page
-       (ex.: opção "Margens: Nenhuma" no diálogo de impressão), então garantimos
-       respiro mesmo assim. */
+    /* Our own padding on top of @page: the browser may ignore the @page margin
+       (e.g. the "Margins: None" option in the print dialog), so we guarantee
+       some breathing room regardless. */
     #printChanges { display: block; padding: 10mm 8mm 16mm; }
   }
   #printChanges { font-family: 'Space Grotesk', system-ui, sans-serif; color: #1b1917; }
@@ -67,13 +67,13 @@
 
   .preview-row:last-child { border-bottom: none !important; }
 
-  /* ---- Responsivo / mobile: inline style não faz media query, então o pouco
-     que precisa reflow no celular vem por classe aqui. ---- */
+  /* ---- Responsive / mobile: inline styles can't do media queries, so the few
+     things that need to reflow on phones are handled by class here. ---- */
   @media (max-width: 680px) {
     #appShell { padding-bottom: 128px !important; }
-    /* menos respiro lateral em todos os containers de 1180px */
+    /* less side padding on every 1180px container */
     [style*="max-width: 1180px"] { padding-left: 16px !important; padding-right: 16px !important; }
-    /* topo: categorias e busca empilham */
+    /* top bar: categories and search stack vertically */
     .topbar-row { flex-direction: column !important; gap: 0 !important; }
     .cat-nav { min-width: 0 !important; width: 100%; flex-wrap: nowrap !important; overflow-x: auto; gap: 18px !important; padding: 11px 0 9px !important; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
     .cat-nav::-webkit-scrollbar { display: none; }
@@ -81,10 +81,10 @@
     .search-box { width: 100%; gap: 12px !important; padding: 9px 0 12px !important; border-top: 1px solid #cdc3af; }
     .search-box > div:first-child { flex: 1; }
     .search-box input { width: 100% !important; }
-    /* barra de edição: botões podem quebrar linha */
+    /* edit bar: buttons are allowed to wrap */
     .editbar-row { flex-wrap: wrap !important; gap: 8px 10px !important; padding: 10px 16px !important; }
     .editbar-row .eb-spacer { flex-basis: 100%; height: 0; }
-    /* títulos de seção um tom menores */
+    /* section headings a notch smaller */
     .sec-head h2 { font-size: 25px !important; }
     .sec-head .sec-num { font-size: 24px !important; }
     .sec-head .sec-sub { display: none; }
@@ -392,10 +392,10 @@
 const EDIT_STORAGE_KEY = "pro-roles-pending-edits";
 
 class Component extends DCLogic {
-  // Os dados (Pokémon, funções, slugs de sprite) ficam em roles-data.js.
-  // editMode/pendingEdits: modo de edição local (?edit=1) — mudanças ficam só
-  // no navegador (localStorage) até alguém exportar e aplicar no arquivo.
-  // sel/clipboard/dragKey/dropKey: editor espacial (selecionar, copiar, arrastar).
+  // The data (Pokémon, roles, sprite slugs) lives in roles-data.js.
+  // editMode/pendingEdits: local edit mode (?edit=1) — changes stay in the
+  // browser (localStorage) until someone exports and applies them to the file.
+  // sel/clipboard/dragKey/dropKey: spatial editor (select, copy, drag).
   state = {
     q: "", cat: "all", selected: null, sections: [], slugs: {}, base: "",
     editMode: false, pendingEdits: [], addingKey: null, addName: "", addNote: "",
@@ -535,8 +535,8 @@ class Component extends DCLogic {
     else this.moveMon({ sectionId: d.sectionId, roleName: d.roleName }, d.name, d.note, d.isPendingAdd, dst);
   }
 
-  // Mover = adiciona no destino + tira da origem, numa gravação só (evita ler
-  // state defasado entre dois setState assíncronos).
+  // Moving = add at the destination + remove from the source, in a single write
+  // (avoids reading stale state between two async setState calls).
   moveMon(src, name, note, isPendingAdd, dst) {
     if (src.sectionId === dst.sectionId && src.roleName === dst.roleName) return;
     let list = this.state.pendingEdits;
@@ -587,8 +587,8 @@ class Component extends DCLogic {
     return entry ? this.monNote(entry) : "";
   }
 
-  // Se for add-pendente, muda o próprio add; se base, empilha/atualiza um "note"
-  // (ou remove-o se a nota voltar a ser igual à do arquivo).
+  // If it's a pending add, edit that add itself; if it's from the file, push or
+  // update a "note" edit (or drop it if the note matches the file again).
   setMonNote(sectionId, roleName, name, note) {
     note = (note || "").trim();
     const pending = this.state.pendingEdits;
@@ -976,13 +976,13 @@ class Component extends DCLogic {
 
   pump() {
     const CONC = 16;
-    const STALL = 9000; // ms: um load que passa disso (ex.: aba escondida) é reiniciado
+    const STALL = 9000; // ms: a load past this (e.g. hidden tab) gets restarted
     const now = Date.now();
     const imgs = document.querySelectorAll('img[data-url]');
     let loading = 0;
     imgs.forEach(img => {
-      // React reaproveita o <img> entre abas: se o data-url mudou, o src atual
-      // é de outro Pokémon → zera o estado para recarregar o sprite certo.
+      // React reuses the <img> across tabs: if data-url changed, the current src
+      // belongs to another Pokémon → reset the state to load the right sprite.
       const want = img.dataset.url || "";
       const cur = (img.getAttribute("src") || "").split("?")[0];
       if (want.startsWith("http") && cur && cur !== want && !cur.startsWith("data:")) {
@@ -1049,13 +1049,14 @@ class Component extends DCLogic {
 
   async componentDidMount() {
     const m = await import("./roles-data.js");
-    // Modo de edição escondido: só liga com ?edit=1 na URL. Sem link nenhum na UI.
+    // Hidden edit mode: only turns on with ?edit=1 in the URL. No link in the UI.
     const editMode = new URLSearchParams(location.search).get("edit") === "1" || /(^|[#&])edit(=1)?($|&)/.test(location.hash);
     let pendingEdits = [];
     try { pendingEdits = JSON.parse(localStorage.getItem(EDIT_STORAGE_KEY) || "[]"); } catch {}
-    // Blinda contra entradas corrompidas salvas por versões antigas (ex.: "name"
-    // gravado como objeto { name, note } em vez de string) — sem isso o changelog
-    // mostra "[object Object]" no Preview do export até o usuário limpar o storage.
+    // Guards against corrupted entries saved by older versions (e.g. "name"
+    // stored as a { name, note } object instead of a string) — without this the
+    // changelog shows "[object Object]" in the export Preview until the user
+    // clears their storage.
     pendingEdits = pendingEdits
       .map(e => ({ ...e, name: this.monName(e.name || ""), note: typeof e.note === "string" ? e.note : this.monName(e.note || "") }))
       .filter(e => e.name);
@@ -1064,9 +1065,9 @@ class Component extends DCLogic {
     this._pumpTimer = setInterval(() => this.pump(), 700);
     this._onVis = () => { if (!document.hidden) this.pump(); };
     document.addEventListener("visibilitychange", this._onVis);
-    // Imagens do bloco de impressão guardam a URL em data-purl (nunca em src, pra
-    // não disparar um fetch do hole literal durante o stream). Só na hora de
-    // imprimir preenchemos o src de verdade.
+    // Images in the print block keep their URL in data-purl (never in src, so a
+    // fetch of the literal hole isn't fired during streaming). Only at print
+    // time do we fill in the real src.
     this._onBeforePrint = () => {
       document.querySelectorAll("#printChanges img[data-purl]").forEach(img => {
         const u = img.getAttribute("data-purl") || "";

@@ -1,113 +1,126 @@
 # PRO Role Compendium
 
-Uma lista visual e interativa de quais Pokémon cumprem cada papel no metagame de PRO OU (fila Ranked). Busca por Pokémon, filtro por categoria e um painel que mostra todos os papéis de um Pokémon ao clicar nele.
+A visual, interactive list of which Pokémon fill each role in the PRO OU metagame (Ranked queue). Search by Pokémon, filter by category, and click any sprite to open a panel showing every role that Pokémon appears in.
 
-Filtrado para a disponibilidade do PRO.
+Filtered down to what's actually available in PRO.
 
 ---
 
-## Arquivos
+## Files
 
-| Arquivo | O que é |
+### The app — the 4 files that must travel together
+
+| File | What it is | Do you edit it? |
+|---|---|---|
+| `roles-data.js` | Every Pokémon, role and category. | **Yes — this one only.** |
+| `index.html` | The app. This is the filename GitHub Pages serves as the home page. | No |
+| `Role Compendium.dc.html` | A **byte-identical copy** of `index.html`. This is the source file the visual editor opens; `index.html` is the published copy. The two always hold the same content. | No |
+| `support.js` | The engine that makes the app run (tool-generated, don't edit). Without it the page loads blank. | No |
+
+> When moving, publishing or sharing, keep all four **in the same folder**. If you edit
+> `Role Compendium.dc.html`, copy it over `index.html` — otherwise the published site
+> falls behind.
+
+### Everything else
+
+| File | What it is |
 |---|---|
-| `Role Compendium.dc.html` | O app (visual + lógica). Não precisa editar para mudar dados. |
-| `index.html` | Cópia idêntica do app, com o nome que o GitHub Pages usa como página inicial. |
-| `roles-data.js` | **O único arquivo que você edita** — todos os Pokémon, papéis e categorias. |
-
-> Ao mover, publicar ou enviar, mantenha o `.html` e o `roles-data.js` **na mesma pasta**.
+| `README.md` | This guide. |
+| `CLAUDE.md` | Project context for the AI assistant. Does not affect the app. |
+| `.gitignore` | Tells git what to leave untracked. Does not affect the app. |
 
 ---
 
-## Como rodar
+## Running it
 
-Os sprites vêm da internet, então precisa de conexão. O app carrega os dados via módulo JavaScript, o que **não funciona abrindo o arquivo com duplo-clique** (`file://` bloqueia por segurança). Use uma destas opções:
+Sprites are fetched from the internet, so you need a connection. The app loads its data as a JavaScript module, which **does not work if you just double-click the file** (`file://` blocks it for security reasons). Use one of these instead:
 
-### Localmente (servidor simples)
-Abra o terminal na pasta dos arquivos e rode uma das opções:
+### Locally (simple server)
+Open a terminal in the folder and run any of:
 
-- **Python:** `python -m http.server` → acesse `http://localhost:8000/`
-- **VS Code:** extensão *Live Server* → clique direito no `index.html` → *Open with Live Server*
+- **Python:** `python -m http.server` → open `http://localhost:8000/`
+- **VS Code:** the *Live Server* extension → right-click `index.html` → *Open with Live Server*
 - **Node:** `npx serve`
 
-### No GitHub Pages
-1. Suba `index.html` e `roles-data.js` (e, se quiser, o `Role Compendium.dc.html`) no repositório.
-2. Em **Settings → Pages**, aponte para a branch/pasta.
-3. Pronto — o Pages serve via `https://`, então o app carrega normalmente. Editar os dados = commit no `roles-data.js`.
+### On GitHub Pages
+1. Push `index.html`, `support.js` and `roles-data.js` (and, if you like, `Role Compendium.dc.html`) to the repository.
+2. Under **Settings → Pages**, point it at the branch/folder.
+3. Done — Pages serves over `https://`, so the app loads normally. Editing the data is just a commit to `roles-data.js`.
 
 ---
 
-## Editando os dados (`roles-data.js`)
+## Editing the data (`roles-data.js`)
 
-Tudo fica em duas estruturas: `SECTIONS` (categorias, papéis e Pokémon) e `SPRITE_SLUGS` (só para formas com sprite de nome diferente).
+Everything lives in two structures: `SECTIONS` (categories, roles and Pokémon) and `SPRITE_SLUGS` (only for forms whose sprite file is named differently).
 
-### Categorias (tabs)
-Cada bloco em `SECTIONS` vira uma tab, na ordem em que aparece no arquivo:
+### Categories (tabs)
+Each block in `SECTIONS` becomes a tab, in the order it appears in the file:
 
 ```js
 { id: "hazards", title: "Entry Hazards", tag: "HAZARDS", roles: [ ... ] }
 ```
 
-- **Renomear a tab** → mude o `title`.
-- **Reordenar** → mova o bloco de lugar (a numeração `01`, `02`… é automática).
-- **Nova tab** → copie um bloco inteiro e dê um `id` único, sem espaços.
-- **Remover** → apague o bloco.
-- A tab **"All"** é gerada automaticamente e sempre fica em primeiro.
+- **Rename a tab** → change `title`.
+- **Reorder** → move the block (the `01`, `02`… numbering is automatic).
+- **New tab** → copy a whole block and give it a unique `id`, no spaces.
+- **Remove** → delete the block.
+- The **"All"** tab is generated automatically and always comes first.
 
-### Papéis
-Dentro de `roles: [ ... ]`, cada papel é:
+### Roles
+Inside `roles: [ ... ]`, each role looks like:
 
 ```js
 { name: "Stealth Rock", move: "Stealth Rock", mons: ["Landorus-Therian", "Heatran", ...] }
 ```
 
-- `name` — título do papel (aparece no card).
-- `move` — rótulo à direita do título (o move/mecânica geral). Deixe `""` para nenhum.
-- `mons` — a lista de Pokémon.
+- `name` — the role's title (shown on the card).
+- `move` — the label to the right of the title (the general move/mechanic). Use `""` for none.
+- `mons` — the list of Pokémon.
 
-Para **criar um papel**, copie um bloco `{ name, move, mons }` inteiro.
+To **create a role**, copy an entire `{ name, move, mons }` block.
 
 ### Pokémon
-Na lista `mons`, cada entrada pode ser um nome simples **ou** um objeto com anotação:
+In the `mons` list, each entry can be a plain name **or** an object with an annotation:
 
 ```js
 mons: [
-  "Ferrothorn",                                  // simples
-  { name: "Kleavor", note: "Stone Axe" },        // mostra COMO ele executa o papel
+  "Ferrothorn",                                  // plain
+  { name: "Kleavor", note: "Stone Axe" },        // shows HOW it fills the role
   { name: "Samurott-Hisui", note: "Ceaseless Edge" },
   "Skarmory"
 ]
 ```
 
-- Use o **nome em inglês** (`"Rotom-Wash"`, `"Mega Mawile"`, `"Landorus-Therian"`).
-- O `note` aparece em vermelho embaixo do sprite e no painel de detalhe (ex.: *Stealth Rock · Stone Axe*). Use-o para casos de exceção — quando o Pokémon setta/executa a função com um move ou ability específico.
-- Pode misturar strings e objetos na mesma lista.
+- Use the **English name** (`"Rotom-Wash"`, `"Mega Mawile"`, `"Landorus-Therian"`).
+- The `note` shows up in red under the sprite and in the detail panel (e.g. *Stealth Rock · Stone Axe*). Use it for the exceptions — when a Pokémon sets up or performs the role through one specific move or ability.
+- You can mix plain strings and objects in the same list.
 
-### Regras de sintaxe (não quebre)
-- Cada `"nome"` entre aspas; vírgula entre eles; **sem vírgula sobrando** no fim da lista.
-- Objetos usam `{ name: "...", note: "..." }` com as chaves exatamente assim.
+### Syntax rules (don't break these)
+- Every `"name"` in quotes, commas between them, **no trailing comma** at the end of a list.
+- Objects use `{ name: "...", note: "..." }` with exactly those keys.
 
 ---
 
 ## Sprites
 
-O sprite é buscado automaticamente a partir do nome do Pokémon. Se algum aparecer como **placeholder (⊘)**, o arquivo do sprite tem um nome diferente do Pokémon — adicione uma linha em `SPRITE_SLUGS`:
+The sprite is looked up automatically from the Pokémon's name. If one shows up as a **placeholder (⊘)**, that sprite's file is named differently — add a line to `SPRITE_SLUGS`:
 
 ```js
 export const SPRITE_SLUGS = {
   "Mega Mawile": "mawile-mega",
-  "Nome exibido": "slug-do-arquivo",
+  "Displayed name": "file-slug",
   ...
 };
 ```
 
-Formas normais **não** precisam entrar aqui. A base das imagens fica em `SPRITE_BASE`, no fim do arquivo — troque ali se um dia a fonte dos sprites mudar.
+Regular forms **don't** need an entry here. The image base URL lives in `SPRITE_BASE` at the end of the file — change it there if the sprite source ever moves.
 
 ---
 
-## Fluxo recomendado
+## Recommended workflow
 
-1. Edite `roles-data.js` num editor de texto (VS Code, Notepad++, etc.).
-2. Salve.
-3. Recarregue a página (servidor local) ou dê commit (GitHub Pages).
+1. Edit `roles-data.js` in any text editor (VS Code, Notepad++, etc.).
+2. Save.
+3. Reload the page (local server) or commit (GitHub Pages).
 
-Nenhum passo de build ou instalação é necessário.
+No build step, no install.
