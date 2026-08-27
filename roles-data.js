@@ -1,73 +1,63 @@
 /* =============================================================================
-   PRO OU ROLE COMPENDIUM — DADOS
+   ROLE COMPENDIUM — funções (roles) de cada Pokémon.
    -----------------------------------------------------------------------------
-   Este é o ÚNICO arquivo que você precisa editar para mudar Pokémon e funções.
-   Não é preciso mexer no "Role Compendium.dc.html".
+   Só SECTIONS mora aqui. Os outros dados foram separados por natureza:
+   • viability-data.js → VIABILITY (a lista-mestre de quem é viável)
+   • sprites.js        → SPRITE_BASE + SPRITE_SLUGS
 
-   Como editar:
-   • Adicionar/remover um Pokémon de uma função → edite a lista "mons: [...]".
-     Nomes entre aspas, separados por vírgula. Use o nome em INGLÊS.
-     Ex.: "Rotom-Wash", "Mega Mawile", "Landorus-Therian".
-   • MOSTRAR COMO um Pokémon executa a função (move/ability específico) →
-     troque o nome por um objeto: { name: "Nome", note: "Move" }.
-     Aparece uma etiqueta embaixo do sprite e no painel de detalhe.
-     Ex.: { name: "Kleavor", note: "Stone Axe" }  (setta SR com o ataque)
-          { name: "Samurott-Hisui", note: "Ceaseless Edge" }
-          { name: "Skarmory", note: "Roar" }
-     Você pode misturar strings e objetos na mesma lista, sem problema.
-   • Criar uma função nova → copie um bloco { name, move, mons } inteiro.
-   • Criar uma categoria nova → copie um bloco { id, title, tag, roles: [...] }.
-     O "id" precisa ser único (sem espaços). O número (01, 02...) é automático.
-   • Reordenar → é só mover os blocos de lugar. A ordem aqui é a ordem na página.
+   Velocidades não têm arquivo: são buscadas na PokéAPI a partir do roster.
 
-   Cuidados:
-   • Cada "nome" entre aspas; vírgula entre eles; SEM vírgula sobrando no fim.
-   • O sprite é buscado automaticamente pelo nome. Se um Pokémon aparecer como
-     placeholder (⊘), o slug do sprite é diferente do nome — adicione uma linha
-     em SPRITE_SLUGS lá embaixo mapeando o nome para o slug correto.
+   Importante: o site só mostra Pokémon que estão no VIABILITY. Um nome numa
+   role que não esteja no ranking é ignorado — adicione-o a um tier em
+   viability-data.js para ele aparecer. Dentro de cada role, a ordem na tela
+   segue o ranking do VR.
 
-   Depois de salvar, abra o "Role Compendium.dc.html" no navegador. Pronto.
+   Como editar uma role:
+   • Adicionar/remover → edite a lista "mons: [...]" (nomes em inglês, aspas).
+   • Mostrar COMO (move/ability) → troque o nome por { name: "X", note: "Move" }.
+   • Nova função → copie um bloco { name, move, mons }.
+   • Nova categoria → copie um bloco { id, title, tag, roles: [...] } (id único).
+   • Reordenar categorias/roles → mova os blocos (a ordem aqui é a da página).
    ========================================================================== */
 
 export const SECTIONS = [
   { id: "hazards", title: "Entry Hazards", tag: "HAZARDS", roles: [
-    { name: "Stealth Rock", move: "Stealth Rock", mons: ["Landorus-Therian", "Clefable", "Mega Diancie", "Ferrothorn", "Garchomp", "Gliscor", "Heatran", "Clodsire", "Excadrill", "Chansey", "Kommo-o", "Mega Tyranitar", "Hippowdon", "Jirachi", "Mew", "Mega Swampert", "Mega Garchomp", "Bronzong", "Mega Aggron", "Tinkaton", "Mamoswine", "Uxie", "Kleavor", "Seismitoad", "Registeel"] },
+    { name: "Stealth Rock", move: "Stealth Rock", mons: ["Landorus-Therian", "Clefable", "Mega Diancie", "Ferrothorn", "Garchomp", "Gliscor", "Heatran", "Clodsire", "Excadrill", "Chansey", "Kommo-o", "Mega Tyranitar", "Hippowdon", "Jirachi", "Mew", "Mega Swampert", "Mega Garchomp", "Bronzong", "Mega Aggron"] },
     { name: "Spikes", move: "Spikes", mons: ["Ferrothorn", "Samurott-Hisui", "Skarmory", "Greninja"] },
-    { name: "Toxic Spikes", move: "Toxic Spikes", mons: ["Clodsire", "Gliscor", "Greninja", "Toxapex", "Gengar", "Cofagrigus"] },
+    { name: "Toxic Spikes", move: "Toxic Spikes", mons: ["Clodsire", "Gliscor", "Greninja", "Toxapex"] },
     { name: "Sticky Web", move: "Sticky Web", mons: ["Ribombee", "Araquanid", "Shuckle", "Smeargle"] },
   ] },
 
   { id: "control", title: "Hazard Control", tag: "CONTROL", roles: [
-    { name: "Defog", move: "Defog", mons: ["Landorus-Therian", "Tornadus-Therian", "Zapdos", "Corviknight", "Gliscor", "Serperior", "Skarmory", "Mega Scizor", "Rotom-Wash", "Moltres", "Hydreigon", "Latias", "Pelipper", "Mega Altaria", "Mew", "Mandibuzz", "Thundurus-Therian", "Mantine", "Latios"] },
+    { name: "Defog", move: "Defog", mons: ["Landorus-Therian", "Tornadus-Therian", "Zapdos", "Corviknight", "Gliscor", "Serperior", "Skarmory", "Mega Scizor", "Rotom-Wash", "Moltres", "Hydreigon", "Latias", "Pelipper", "Mega Altaria", "Mew", "Mandibuzz", "Thundurus-Therian", "Mantine"] },
     { name: "Rapid Spin", move: "Rapid Spin", mons: ["Excadrill", "Torkoal"] },
     { name: "Magic Bounce", move: "Ability", mons: ["Mega Diancie", "Hatterene", "Mega Sableye"] },
+    { name: "Court Change", move: "Court Change", mons: ["Cinderace"] },
   ] },
 
   { id: "utility", title: "Utility & Support", tag: "UTILITY", roles: [
-    { name: "Encore", move: "Encore", mons: ["Clefable", "Mega Lopunny", "Samurott-Hisui", "Tinkaton"] },
-    { name: "Knock Off", move: "Knock Off", mons: ["Landorus-Therian", "Tornadus-Therian", "Clefable", "Ferrothorn", "Gliscor", "Mega Mawile", "Serperior", "Bisharp", "Tyranitar", "Samurott-Hisui", "Mega Scizor", "Weavile", "Azumarill", "Hoopa-Unbound", "Mega Tyranitar", "Mega Sableye", "Tangrowth", "Mega Gallade", "Mew", "Pelipper", "Crawdaunt", "Muk-Alola", "Toxapex", "Diggersby", "Mandibuzz", "Tinkaton"] },
-    { name: "Taunt", move: "Taunt", mons: ["Landorus-Therian", "Tornadus-Therian", "Gliscor", "Heatran", "Serperior", "Skarmory", "Keldeo", "Mega Gyarados", "Kommo-o", "Mew", "Thundurus-Therian", "Gyarados", "Hawlucha", "Mega Aerodactyl", "Azelf"] },
-    { name: "Trick / Switcheroo", move: "Trick", mons: ["Clefable", "Latios", "Victini", "Blacephalon", "Rotom-Wash", "Jirachi", "Greninja", "Latias", "Sneasler", "Togekiss"] },
-    { name: "Endeavor", move: "Endeavor", mons: ["Diancie", "Mamoswine"] },
-    { name: "Substitute", move: "Substitute", mons: ["Serperior", "Volcarona", "Diancie", "Garchomp"] },
+    { name: "Encore", move: "Encore", mons: ["Clefable", "Mega Lopunny", "Samurott-Hisui"] },
+    { name: "Knock Off", move: "Knock Off", mons: ["Landorus-Therian", "Tornadus-Therian", "Clefable", "Ferrothorn", "Gliscor", "Mega Mawile", "Serperior", "Bisharp", "Tyranitar", "Samurott-Hisui", "Mega Scizor", "Weavile", "Azumarill", "Hoopa-Unbound", "Mega Tyranitar", "Mega Sableye", "Tangrowth", "Mega Gallade", "Mew", "Pelipper", "Crawdaunt", "Muk-Alola", "Toxapex", "Rillaboom"] },
+    { name: "Taunt", move: "Taunt", mons: ["Landorus-Therian", "Tornadus-Therian", "Gliscor", "Heatran", "Serperior", "Skarmory", "Keldeo", "Mega Gyarados", "Kommo-o", "Mew", "Thundurus-Therian", "Gyarados", "Hawlucha", "Mega Aerodactyl", "Grimmsnarl"] },
+    { name: "Trick / Switcheroo", move: "Trick", mons: ["Clefable", "Latios", "Victini", "Blacephalon", "Rotom-Wash", "Jirachi", "Greninja", "Latias"] },
   ] },
 
   { id: "attackers", title: "Attackers", tag: "ATTACKERS", roles: [
-    { name: "Physical Attackers", move: "", mons: ["Landorus-Therian", "Dragonite", "Mega Lopunny", "Garchomp", "Gliscor", "Kyurem-Black", "Mega Mawile", "Bisharp", "Tyranitar", "Aegislash", "Excadrill", "Hoopa-Unbound", "Mega Scizor", "Victini", "Weavile", "Azumarill", "Annihilape", "Mega Charizard X", "Mega Gyarados", "Kommo-o", "Mega Tyranitar", "Greninja", "Mega Medicham", "Breloom", "Mega Heracross", "Mega Pinsir", "Mega Swampert", "Mega Gallade", "Arcanine-Hisui", "Crawdaunt", "Mamoswine", "Mega Garchomp", "Gyarados", "Mega Aerodactyl", "Dragapult", "Lilligant-Hisui"] },
-    { name: "Special Attackers", move: "", mons: ["Tornadus-Therian", "Clefable", "Volcarona", "Zapdos", "Mega Diancie", "Heatran", "Kyurem", "Serperior", "Aegislash", "Latios", "Hoopa-Unbound", "Keldeo", "Manaphy", "Victini", "Blacephalon", "Mega Latios", "Mega Gardevoir", "Mega Charizard Y", "Mega Latias", "Kommo-o", "Greninja", "Volcanion", "Jirachi", "Hydreigon", "Magnezone", "Reuniclus", "Latias", "Thundurus-Therian", "Dragapult", "Primarina", "Goodra-Hisui"] },
+    { name: "Physical Attackers", move: "", mons: ["Landorus-Therian", "Dragonite", "Mega Lopunny", "Garchomp", "Gliscor", "Kyurem-Black", "Mega Mawile", "Bisharp", "Tyranitar", "Aegislash", "Excadrill", "Hoopa-Unbound", "Mega Scizor", "Victini", "Weavile", "Azumarill", "Annihilape", "Mega Charizard X", "Mega Gyarados", "Kommo-o", "Mega Tyranitar", "Greninja", "Mega Medicham", "Breloom", "Mega Heracross", "Mega Pinsir", "Mega Swampert", "Mega Gallade", "Arcanine-Hisui", "Crawdaunt", "Mamoswine", "Mega Garchomp", "Gyarados", "Mega Aerodactyl", "Dragapult", "Lilligant-Hisui", "Cinderace", "Rillaboom", "Grimmsnarl", "Araquanid", "Arctozolt", "Dracozolt"] },
+    { name: "Special Attackers", move: "", mons: ["Tornadus-Therian", "Clefable", "Volcarona", "Zapdos", "Mega Diancie", "Heatran", "Kyurem", "Serperior", "Aegislash", "Latios", "Hoopa-Unbound", "Keldeo", "Manaphy", "Victini", "Blacephalon", "Mega Latios", "Mega Gardevoir", "Mega Charizard Y", "Mega Latias", "Kommo-o", "Greninja", "Volcanion", "Jirachi", "Hydreigon", "Magnezone", "Reuniclus", "Latias", "Thundurus-Therian", "Dragapult", "Primarina", "Goodra-Hisui", "Indeedee"] },
     { name: "Mixed Attackers", move: "", mons: ["Mega Diancie", "Kyurem-Black", "Aegislash", "Mega Latios", "Kommo-o", "Greninja", "Mega Garchomp", "Dragapult"] },
   ] },
 
   { id: "setup", title: "Setup Sweepers", tag: "OFFENSE", roles: [
     { name: "Agility / Rock Polish", move: "", mons: ["Landorus-Therian", "Mega Diancie", "Mew", "Thundurus-Therian"] },
     { name: "Belly Drum", move: "", mons: ["Azumarill", "Kommo-o"] },
-    { name: "Calm Mind", move: "", mons: ["Clefable", "Keldeo", "Blacephalon", "Hatterene", "Mega Sableye", "Suicune", "Cresselia", "Latias", "Reuniclus"] },
+    { name: "Calm Mind", move: "", mons: ["Clefable", "Keldeo", "Blacephalon", "Hatterene", "Mega Sableye", "Suicune", "Cresselia", "Latias", "Reuniclus", "Primarina"] },
     { name: "Dragon Dance", move: "", mons: ["Dragonite", "Mega Charizard X", "Mega Gyarados", "Kommo-o", "Mega Tyranitar", "Mega Altaria", "Gyarados", "Dragapult"] },
     { name: "Hone Claws", move: "", mons: ["Kyurem-Black", "Mega Aerodactyl"] },
     { name: "Nasty Plot", move: "", mons: ["Hoopa-Unbound", "Mew", "Porygon-Z", "Thundurus-Therian"] },
     { name: "Power-Up Punch", move: "", mons: ["Mega Lopunny", "Mega Swampert"] },
     { name: "Quiver Dance", move: "", mons: ["Volcarona"] },
-    { name: "Swords Dance", move: "", mons: ["Landorus-Therian", "Garchomp", "Gliscor", "Mega Mawile", "Bisharp", "Excadrill", "Mega Scizor", "Weavile", "Ursaluna", "Sneasler", "Mega Charizard X", "Kommo-o", "Breloom", "Mega Heracross", "Mega Pinsir", "Mega Gallade", "Crawdaunt", "Mega Garchomp", "Hawlucha", "Marowak-Alola", "Terrakion"] },
+    { name: "Swords Dance", move: "", mons: ["Landorus-Therian", "Garchomp", "Gliscor", "Mega Mawile", "Bisharp", "Excadrill", "Mega Scizor", "Weavile", "Ursaluna", "Sneasler", "Mega Charizard X", "Kommo-o", "Breloom", "Mega Heracross", "Mega Pinsir", "Mega Gallade", "Crawdaunt", "Mega Garchomp", "Hawlucha", "Marowak-Alola", "Terrakion", "Rillaboom"] },
     { name: "Bulk Up", move: "", mons: ["Corviknight", "Annihilape"] },
     { name: "Other", move: "Signature Abilities", mons: [{ name: "Clefable", note: "Cosmic Power" }, { name: "Serperior", note: "Contrary" }, { name: "Blacephalon", note: "Beast Boost" }, { name: "Victini", note: "Z-Happy Hour" }, { name: "Manaphy", note: "Tail Glow" }, { name: "Sneasler", note: "Unburden" }, { name: "Kommo-o", note: "Clangorous Soulblaze / Clangorous Soul" }, { name: "Jirachi", note: "Happy Hour" }, { name: "Porygon-Z", note: "Z-Conversion" }, { name: "Reuniclus", note: "Acid Armor" }, { name: "Hawlucha", note: "Unburden" }, { name: "Cloyster", note: "Shell Smash" }] },
   ] },
@@ -78,9 +68,10 @@ export const SECTIONS = [
     { name: "Fake Out", move: "Fake Out", mons: ["Mega Lopunny", "Mega Medicham", "Cloyster"] },
     { name: "Ice Shard", move: "Ice Shard", mons: ["Weavile", "Mamoswine"] },
     { name: "Quick Attack", move: "Quick Attack", mons: ["Mega Lopunny", "Mega Pinsir"] },
-    { name: "Sucker Punch", move: "Sucker Punch", mons: ["Mega Mawile", "Bisharp", "Samurott-Hisui", "Dragapult"] },
+    { name: "Sucker Punch", move: "Sucker Punch", mons: ["Mega Mawile", "Bisharp", "Samurott-Hisui", "Dragapult", "Grimmsnarl"] },
     { name: "Extreme Speed", move: "Extreme Speed", mons: ["Dragonite", "Arcanine-Hisui"] },
     { name: "Mach Punch", move: "Mach Punch", mons: ["Breloom", "Conkeldurr"] },
+    { name: "Grassy Glide", move: "Grassy Glide", mons: [{ name: "Rillaboom", note: "Grassy Terrain" }] },
     { name: "Vacuum Wave", move: "", mons: ["Mega Gardevoir", "Keldeo"] },
   ] },
 
@@ -97,7 +88,7 @@ export const SECTIONS = [
   ] },
 
   { id: "pivots", title: "Pivots", tag: "PIVOTS", roles: [
-    { name: "U-turn", move: "", mons: ["Landorus-Therian", "Tornadus-Therian", "Zapdos", "Mega Lopunny", "Gliscor", "Corviknight", "Mega Scizor", "Victini", "Annihilape", "Sneasler", "Greninja", "Jirachi", "Moltres", "Pelipper", "Dragapult"] },
+    { name: "U-turn", move: "", mons: ["Landorus-Therian", "Tornadus-Therian", "Zapdos", "Mega Lopunny", "Gliscor", "Corviknight", "Mega Scizor", "Victini", "Annihilape", "Sneasler", "Greninja", "Jirachi", "Moltres", "Pelipper", "Dragapult", "Cinderace", "Rillaboom"] },
     { name: "Volt Switch", move: "", mons: ["Zapdos", "Rotom-Wash", "Magnezone", "Thundurus-Therian", "Mega Manectric"] },
     { name: "Flip Turn", move: "", mons: ["Latios", "Samurott-Hisui", "Keldeo", "Mega Swampert", "Primarina", "Barraskewda", "Basculegion-F"] },
     { name: "Teleport", move: "", mons: ["Clefable", "Slowbro", { name: "Slowking", note: "Chilly Reception" }, "Chansey", "Porygon2"] },
@@ -116,12 +107,12 @@ export const SECTIONS = [
 
   { id: "clerics", title: "Clerics", tag: "CLERICS", roles: [
     { name: "Heal Bell / Aromatherapy", move: "Heal Bell / Aromatherapy", mons: ["Clefable", "Chansey", "Mega Altaria"] },
-    { name: "Healing Wish / Lunar Dance", move: "", mons: ["Mega Lopunny", "Hatterene", "Jirachi", "Cresselia", "Latias", "Ninetales"] },
+    { name: "Healing Wish / Lunar Dance", move: "", mons: ["Mega Lopunny", "Hatterene", "Jirachi", "Cresselia", "Latias", "Ninetales", "Indeedee"] },
     { name: "Wish", move: "Wish", mons: ["Clefable", "Chansey", "Jirachi", "Latias", "Alomomola"] },
   ] },
 
   { id: "screens", title: "Screeners", tag: "SCREENS", roles: [
-    { name: "Screeners", move: "Reflect / Light Screen", mons: ["Serperior", { name: "Ninetales-Alola", note: "Aurora Veil" }, "Grimmsnarl"] },
+    { name: "Screeners", move: "Reflect / Light Screen", mons: ["Serperior", { name: "Ninetales-Alola", note: "Aurora Veil" }, { name: "Grimmsnarl", note: "Prankster" }, { name: "Indeedee", note: "Psychic Terrain" }] },
   ] },
 
   { id: "leads", title: "Suicide Leads", tag: "LEADS", roles: [
@@ -136,18 +127,18 @@ export const SECTIONS = [
   ] },
 
   { id: "weather", title: "Weather", tag: "WEATHER", roles: [
-    { name: "Snow Setters", move: "Snow Warning", mons: [{ name: "Slowking", note: "Chilly Reception" }, { name: "Ninetales-Alola", note: "Snow Warning" }] },
+    { name: "Snow", move: "Snow Warning", mons: [{ name: "Slowking", note: "Chilly Reception" }, { name: "Ninetales-Alola", note: "Snow Warning" }] },
     { name: "Snow Abusers", move: "", mons: [{ name: "Kyurem", note: "Blizzard" }, { name: "Arctozolt", note: "Slush Rush" }] },
     { name: "Sand Setters", move: "Sand Stream", mons: [{ name: "Tyranitar", note: "Sand Stream" }, { name: "Mega Tyranitar", note: "Sand Stream" }, { name: "Hippowdon", note: "Sand Stream" }] },
     { name: "Sand Abusers", move: "", mons: [{ name: "Garchomp", note: "Sand Veil" }, { name: "Excadrill", note: "Sand Rush" }, { name: "Mega Garchomp", note: "Sand Force" }, { name: "Dracozolt", note: "Sand Rush" }] },
     { name: "Sun Setters", move: "Drought", mons: [{ name: "Mega Charizard Y", note: "Drought" }, { name: "Torkoal", note: "Drought" }, { name: "Ninetales", note: "Drought" }] },
-    { name: "Sun Abusers", move: "", mons: ["Heatran", "Victini", { name: "Cresselia", note: "Moonlight" }, { name: "Venusaur", note: "chlorophyll" }, {name:"Lilligant-Hisui", note: "chlorophyll"}] },
+    { name: "Sun Abusers", move: "", mons: ["Heatran", "Victini", { name: "Cresselia", note: "Moonlight" }, { name: "Venusaur", note: "chlorophyll" }, "Lilligant-Hisui"] },
     { name: "Rain Setter", move: "Drizzle", mons: [{ name: "Pelipper", note: "Drizzle" }] },
     { name: "Rain Abusers", move: "", mons: [{ name: "Tornadus-Therian", note: "Hurricane" }, { name: "Zapdos", note: "Hurricane" }, "Ferrothorn", { name: "Manaphy", note: "Hydration" }, "Azumarill", { name: "Mega Swampert", note: "Swift Swim" }, { name: "Kingdra", note: "Swift Swim" }, { name: "Araquanid", note: "Water Bubble" }, { name: "Barraskewda", note: "Swift Swim" }] },
   ] },
 
   { id: "trickroom", title: "Trick Room", tag: "TRICK ROOM", roles: [
-    { name: "Trick Room Setters", move: "Trick Room", mons: ["Cresselia", "Uxie", "Porygon2", "Cofagrigus", "Bronzong"] },
+    { name: "Trick Room Setters", move: "Trick Room", mons: ["Cresselia", "Uxie", "Porygon2", "Cofagrigus", "Bronzong", "Indeedee"] },
     { name: "Trick Room Abusers", move: "", mons: ["Mega Mawile", "Ursaluna", "Hoopa-Unbound", "Victini", "Mega Heracross", "Crawdaunt", "Marowak-Alola"] },
   ] },
 
@@ -158,61 +149,4 @@ export const SECTIONS = [
     { name: "Sleep", move: "", mons: [{ name: "Mega Venusaur", note: "Sleep Powder" }, { name: "Tangrowth", note: "Sleep Powder" }, { name: "Amoonguss", note: "Spore" }, { name: "Breloom", note: "Spore" }] },
     { name: "Status Absorbers", move: "Ability", mons: [{ name: "Mega Diancie", note: "Magic Bounce" }, { name: "Clefable", note: "Magic Guard" }, { name: "Gliscor", note: "Poison Heal" }, { name: "Hatterene", note: "Magic Bounce" }, { name: "Manaphy", note: "Hydration" }, { name: "Ursaluna", note: "Guts" }, { name: "Chansey", note: "Natural Cure" }, { name: "Mega Sableye", note: "Magic Bounce" }, { name: "Reuniclus", note: "Magic Guard" }, { name: "Altaria", note: "Natural Cure" }] },
   ] },
-
-  { id: "megas", title: "Megas", tag: "MEGAS", roles: [
-    { name: "Mega Evolutions", move: "", mons: ["Mega Diancie", "Mega Tyranitar", "Mega Swampert", "Mega Garchomp", "Mega Aggron", "Mega Scizor", "Mega Sableye", "Mega Lopunny", "Mega Mawile", "Mega Charizard X", "Mega Charizard Y", "Mega Gyarados", "Mega Medicham", "Mega Heracross", "Mega Pinsir", "Mega Gallade", "Mega Latios", "Mega Latias", "Mega Gardevoir", "Mega Altaria", "Mega Aerodactyl", "Mega Venusaur", "Mega Slowbro", "Mega Manectric"] },
-  ] },
-
-  { id: "speed", title: "Fast Mons", tag: "SPEED", roles: [
-    { name: "110+ Speed", move: "", mons: ["Mega Aerodactyl", "Dragapult", "Mega Manectric", "Mega Lopunny", "Sneasler", "Weavile", "Greninja", "Tornadus-Therian", "Serperior", "Latios", "Latias", "Mega Diancie", "Gengar"] },
-  ] },
 ];
-
-/* -----------------------------------------------------------------------------
-   SPRITE_SLUGS — só para formas cujo arquivo de sprite tem nome diferente.
-   Pokémon normais NÃO precisam entrar aqui (o slug é gerado do próprio nome).
-   Formato:  "Nome exibido": "slug-do-arquivo"
-   Se um sprite aparecer como placeholder (⊘), adicione o nome aqui.
-   -------------------------------------------------------------------------- */
-export const SPRITE_SLUGS = {
-  "Mega Charizard X": "charizard-mega-x",
-  "Mega Charizard Y": "charizard-mega-y",
-  "Mega Mawile": "mawile-mega",
-  "Mega Scizor": "scizor-mega",
-  "Mega Medicham": "medicham-mega",
-  "Mega Latias": "latias-mega",
-  "Mega Latios": "latios-mega",
-  "Mega Sableye": "sableye-mega",
-  "Mega Diancie": "diancie-mega",
-  "Mega Gyarados": "gyarados-mega",
-  "Mega Pinsir": "pinsir-mega",
-  "Mega Gallade": "gallade-mega",
-  "Mega Lopunny": "lopunny-mega",
-  "Mega Tyranitar": "tyranitar-mega",
-  "Mega Venusaur": "venusaur-mega",
-  "Mega Absol": "absol-mega",
-  "Mega Camerupt": "camerupt-mega",
-  "Mega Slowbro": "slowbro-mega",
-  "Mega Heracross": "heracross-mega",
-  "Mega Beedrill": "beedrill-mega",
-  "Mega Aggron": "aggron-mega",
-  "Kyurem-Black": "kyurem-black",
-  "Landorus-Therian": "landorus-therian",
-  "Tornadus-Therian": "tornadus-therian",
-  "Thundurus-Therian": "thundurus-therian",
-  "Ninetales-Alola": "ninetales-alola",
-  "Marowak-Alola": "marowak-alola",
-  "Rotom-Wash": "rotom-wash",
-  "Hoopa-Unbound": "hoopa-unbound",
-  "Zygarde": "zygarde",
-  "Mega Swampert": "swampert-mega",
-  "Mega Garchomp": "garchomp-mega",
-  "Mega Altaria": "altaria-mega",
-  "Mega Aerodactyl": "aerodactyl-mega",
-  "Mega Sharpedo": "sharpedo-mega",
-  "Mega Manectric": "manectric-mega",
-  "Mega Gardevoir": "gardevoir-mega",
-};
-
-/* Base URL dos sprites (Smogon Mystery Dungeon). Troque aqui se um dia mudar. */
-export const SPRITE_BASE = "https://www.smogon.com/forums/media/pmd/";
