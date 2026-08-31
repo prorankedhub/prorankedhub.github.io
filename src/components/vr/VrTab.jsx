@@ -79,7 +79,9 @@ export default function VrTab({ vr, editMode, urlFor, onOpenMon }) {
         tier: t.tier,
         idx,
         items,
-        hidden: query && !tierHasMatch,
+        // A rank with nobody in it is just noise while browsing — hide it.
+        // Kept while editing so there's still a way to add someone to it.
+        hidden: (query && !tierHasMatch) || (!editMode && t.mons.length === 0),
         count: (query ? items.filter((m) => !m.isGhost && !m.dim).length : t.mons.length) + (t.mons.length === 1 ? " mon" : " mons"),
       };
     })
@@ -117,17 +119,20 @@ export default function VrTab({ vr, editMode, urlFor, onOpenMon }) {
       <div className="roles-wrap">
         <aside className="cat-rail cat-rail__panel">
           <div className="cat-rail__label">Tiers</div>
-          {vr.vr.map((t, i) => (
-            <a
-              key={t.tier}
-              className={"vr-nav-row" + (activeVr === i ? " vr-nav-row--active" : "")}
-              onClick={() => spy.scrollTo(i)}
-            >
-              <span className={"vr-nav-row__label " + tierColorClass(t.tier)}>{t.tier}</span>
-              <span className="vr-nav-row__desc">{VR_DESC[t.tier] || ""}</span>
-              <span className="vr-nav-row__count">{t.mons.length}</span>
-            </a>
-          ))}
+          {working.map((t, i) => {
+            if (!editMode && t.mons.length === 0) return null;
+            return (
+              <a
+                key={t.tier}
+                className={"vr-nav-row" + (activeVr === i ? " vr-nav-row--active" : "")}
+                onClick={() => spy.scrollTo(i)}
+              >
+                <span className={"vr-nav-row__label " + tierColorClass(t.tier)}>{t.tier}</span>
+                <span className="vr-nav-row__desc">{VR_DESC[t.tier] || ""}</span>
+                <span className="vr-nav-row__count">{t.mons.length}</span>
+              </a>
+            );
+          })}
         </aside>
 
         <div className="roles-content">

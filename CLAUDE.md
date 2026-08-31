@@ -3,7 +3,7 @@
 Persistent project context. Read before editing.
 
 ## What it is
-A visual/interactive toolkit for the **PRO OU** metagame (Pokémon Revolution Online, **Ranked** queue): Role Compendium, Speed Tiers, Viability Ranking, and a Team Builder. Based on Smogon's SM OU Role Compendium, filtered down to what's available in PRO. Sprites come from Smogon's Mystery Dungeon set, resolved at runtime via SpriteCollab's GraphQL API.
+A visual/interactive toolkit for the **PRO OU** metagame (Pokémon Revolution Online, **Ranked** queue): Role Compendium, Speed Tiers, Viability Ranking, and a Team Builder. Based on several Smogon SM OU threads, filtered down to what's available in PRO. Sprites come from the PMD Sprites Repository (sprites.pmdcollab.org), resolved at runtime via SpriteCollab's GraphQL API.
 
 ## Stack
 Vite + React, plain JavaScript (no TypeScript), no external state management library — app state lives in small hooks (`src/hooks/`). Plain CSS, one file per component, no CSS Modules. `npm run dev` / `npm run build` / `npm run preview`. Deploys automatically on push to `main` via `.github/workflows/deploy.yml` (GitHub Actions → GitHub Pages).

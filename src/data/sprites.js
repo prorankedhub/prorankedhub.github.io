@@ -1,11 +1,9 @@
 /* =============================================================================
    SPRITES — utilitário compartilhado por todas as abas.
-   A Smogon migrou seus assets pra URLs com hash (deixou de existir um padrão
-   previsível por nome), então os retratos vêm em runtime do SpriteCollab
-   (GraphQL público, mesmo projeto PMD que a Smogon usa) e ficam em cache no
-   navegador — igual às velocidades. Nenhum mapeamento de nome→arquivo aqui:
-   o parser de nomes é genérico. Só o que não cabe num parser genérico mora
-   nestas duas listas.
+   Os retratos vêm em runtime do PMD Sprites Repository (sprites.pmdcollab.org),
+   via a API pública do SpriteCollab, e ficam em cache no navegador — igual às
+   velocidades. Nenhum mapeamento de nome→arquivo aqui: o parser de nomes é
+   genérico. Só o que não cabe num parser genérico mora nestas duas listas.
    ========================================================================== */
 
 export const SPRITE_API = "https://spriteserver.pmdcollab.org/graphql";

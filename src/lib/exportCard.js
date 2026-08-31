@@ -1,8 +1,8 @@
 /* =============================================================================
    EXPORT CARD — builds the offscreen HTML poster captured to PNG via
-   html-to-image. No sprites go through the live <img> tags here: Smogon's
-   sprite URLs aren't CORS-enabled, so export renders route through an image
-   proxy instead (images.weserv.nl) — only for this feature, never on-screen.
+   html-to-image. No sprites go through the live <img> tags here: the sprite
+   host isn't CORS-enabled, so export renders route through an image proxy
+   instead (images.weserv.nl) — only for this feature, never on-screen.
    Pure functions; the useExport hook owns the actual DOM/canvas capture.
    ========================================================================== */
 
