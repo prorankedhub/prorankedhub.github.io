@@ -41,10 +41,12 @@ a:hover { color: var(--accent-hi); }
 .tip-pop::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--ink); }
 .tip-wrap:hover .tip-pop { opacity: 1; visibility: visible; }
 .cat-select { display: none; }
+.cat-select-add { display: none; }
 .cell-lbl { display: none; }
 @media (max-width: 860px) {
   .cat-rail { display: none !important; }
   .cat-select { display: block; }
+  .cat-select-add { display: inline-flex; }
   .roles-wrap { display: block !important; }
 }
 ::selection { background: var(--accent); color: var(--paper); }

@@ -45,38 +45,50 @@ export function canonicalMonName(name, names) {
   return name;
 }
 
-// "Clean" result: removed mons drop out, added mons appear, notes applied.
-// Used for export, counters and the detail drawer. The on-screen grid uses
-// the status-aware model built in the Roles tab component, so removed mons
-// can still render struck-through.
+function mergeRole(sec, role, pendingEdits) {
+  const key = sec.id + "|" + role.name;
+  const removes = new Set(
+    pendingEdits.filter((e) => e.type === "remove" && e.sectionId + "|" + e.roleName === key).map((e) => e.name),
+  );
+  const notes = {};
+  pendingEdits
+    .filter((e) => e.type === "note" && e.sectionId + "|" + e.roleName === key)
+    .forEach((e) => {
+      notes[e.name] = e.note;
+    });
+  const adds = pendingEdits.filter((e) => e.type === "add" && e.sectionId + "|" + e.roleName === key);
+  if (!removes.size && !adds.length && !Object.keys(notes).length) return role;
+  const mons = role.mons
+    .filter((m) => !removes.has(monName(m)))
+    .map((m) => {
+      const name = monName(m);
+      if (name in notes) return notes[name] ? { name, note: notes[name] } : name;
+      return m;
+    })
+    .concat(adds.map((e) => (e.note ? { name: e.name, note: e.note } : e.name)));
+  return { ...role, mons };
+}
+
+// "Clean" result: removed mons drop out, added mons appear, notes applied,
+// and any brand-new sections/roles staged this session are appended. Used
+// for export, counters and the detail drawer. The on-screen grid uses the
+// status-aware model built in the Roles tab component, so removed mons can
+// still render struck-through.
 export function data(sections, pendingEdits, editMode) {
   if (!editMode || !pendingEdits.length) return sections;
-  return sections.map((sec) => ({
-    ...sec,
-    roles: sec.roles.map((role) => {
-      const key = sec.id + "|" + role.name;
-      const removes = new Set(
-        pendingEdits.filter((e) => e.type === "remove" && e.sectionId + "|" + e.roleName === key).map((e) => e.name),
-      );
-      const notes = {};
-      pendingEdits
-        .filter((e) => e.type === "note" && e.sectionId + "|" + e.roleName === key)
-        .forEach((e) => {
-          notes[e.name] = e.note;
-        });
-      const adds = pendingEdits.filter((e) => e.type === "add" && e.sectionId + "|" + e.roleName === key);
-      if (!removes.size && !adds.length && !Object.keys(notes).length) return role;
-      const mons = role.mons
-        .filter((m) => !removes.has(monName(m)))
-        .map((m) => {
-          const name = monName(m);
-          if (name in notes) return notes[name] ? { name, note: notes[name] } : name;
-          return m;
-        })
-        .concat(adds.map((e) => (e.note ? { name: e.name, note: e.note } : e.name)));
-      return { ...role, mons };
-    }),
-  }));
+
+  const newSections = pendingEdits
+    .filter((e) => e.type === "addSection")
+    .map((e) => ({ id: e.sectionId, title: e.title, tag: e.tag, roles: [] }));
+  const allSections = [...sections, ...newSections];
+
+  return allSections.map((sec) => {
+    const newRoles = pendingEdits
+      .filter((e) => e.type === "addRole" && e.sectionId === sec.id)
+      .map((e) => ({ name: e.roleName, move: e.move || "", mons: [] }));
+    const roles = [...sec.roles, ...newRoles].map((role) => mergeRole(sec, role, pendingEdits));
+    return { ...sec, roles };
+  });
 }
 
 export function roleHasMon(sections, list, sectionId, roleName, name) {
@@ -188,4 +200,62 @@ export function setMonNote(sections, pendingEdits, sectionId, roleName, name, ra
   let next = pendingEdits.filter((e) => !(e.type === "note" && e.sectionId === sectionId && e.roleName === roleName && e.name === name));
   if (note !== baseNote) next = [...next, { type: "note", sectionId, roleName, name, note }];
   return next;
+}
+
+function slugify(title) {
+  return (
+    title
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "section"
+  );
+}
+
+function uniqueSectionId(base, existingIds) {
+  let id = base;
+  let i = 2;
+  while (existingIds.has(id)) {
+    id = `${base}-${i}`;
+    i++;
+  }
+  return id;
+}
+
+// New categories and roles are staged the same way as mon edits — as
+// pendingEdits entries ("addSection"/"addRole") — so they show up live via
+// data() and get written out by serializeSections() on export, without a
+// separate data model. `tag` isn't shown anywhere in the UI (see
+// roles-data.js's format), it's just carried through to the exported file.
+export function addSection(sections, pendingEdits, title) {
+  const trimmed = (title || "").trim();
+  if (!trimmed) return { pendingEdits, toast: null };
+  const existingIds = new Set([
+    ...sections.map((s) => s.id),
+    ...pendingEdits.filter((e) => e.type === "addSection").map((e) => e.sectionId),
+  ]);
+  const sectionId = uniqueSectionId(slugify(trimmed), existingIds);
+  return {
+    pendingEdits: [...pendingEdits, { type: "addSection", sectionId, title: trimmed, tag: trimmed.toUpperCase() }],
+    toast: `Added category "${trimmed}"`,
+    sectionId,
+  };
+}
+
+function sectionRoleNames(sections, pendingEdits, sectionId) {
+  const base = sections.find((s) => s.id === sectionId)?.roles.map((r) => r.name) || [];
+  const added = pendingEdits.filter((e) => e.type === "addRole" && e.sectionId === sectionId).map((e) => e.roleName);
+  return new Set([...base, ...added]);
+}
+
+export function addRole(sections, pendingEdits, sectionId, roleName, move) {
+  const trimmed = (roleName || "").trim();
+  if (!trimmed) return { pendingEdits, toast: null };
+  if (sectionRoleNames(sections, pendingEdits, sectionId).has(trimmed)) {
+    return { pendingEdits, toast: `"${trimmed}" already exists in this category` };
+  }
+  return {
+    pendingEdits: [...pendingEdits, { type: "addRole", sectionId, roleName: trimmed, move: (move || "").trim() }],
+    toast: `Added role "${trimmed}"`,
+  };
 }

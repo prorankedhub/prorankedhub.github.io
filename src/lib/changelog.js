@@ -9,8 +9,13 @@ import { monName } from "./rolesLogic.js";
 import { vrBaseTierOf } from "./vrLogic.js";
 
 export function buildChangelog(scope, { sections, pendingEdits, vr, vrDraft }) {
-  const titleFor = (id) => (sections.find((s) => s.id === id) || {}).title || id;
+  const titleFor = (id) =>
+    (sections.find((s) => s.id === id) || {}).title ||
+    (pendingEdits.find((e) => e.type === "addSection" && e.sectionId === id) || {}).title ||
+    id;
   const roleLines = (scope === "vr" ? [] : pendingEdits).map((e) => {
+    if (e.type === "addSection") return `+ New category "${e.title}"`;
+    if (e.type === "addRole") return `+ New role "${e.roleName}" -> ${titleFor(e.sectionId)}`;
     const where = `${e.roleName} (${titleFor(e.sectionId)})`;
     if (e.type === "add") return `+ ${e.note ? `${e.name} (${e.note})` : e.name} -> ${where}`;
     if (e.type === "remove") return `- ${e.name} -> ${where}`;
@@ -39,16 +44,23 @@ export function buildChangelog(scope, { sections, pendingEdits, vr, vrDraft }) {
 
 export function changeCounts(pendingEdits) {
   const c = { add: 0, remove: 0, note: 0 };
-  for (const e of pendingEdits) c[e.type === "add" ? "add" : e.type === "remove" ? "remove" : "note"]++;
+  for (const e of pendingEdits) {
+    if (e.type === "remove") c.remove++;
+    else if (e.type === "add" || e.type === "addSection" || e.type === "addRole") c.add++;
+    else c.note++;
+  }
   return c;
 }
 
 // Groups pendingEdits by section -> role, with a sprite URL and a +/-/~
-// sign per mon, for the print sheet and the PNG share card.
+// sign per mon, for the print sheet and the PNG share card. New
+// categories/roles have no mon/sprite to show here — they're covered by the
+// plain-text changelog instead.
 export function printGroups(pendingEdits, sections, urlFor) {
-  if (!pendingEdits.length) return [];
+  const monEdits = pendingEdits.filter((e) => e.type === "add" || e.type === "remove" || e.type === "note");
+  if (!monEdits.length) return [];
   const bySection = new Map();
-  for (const e of pendingEdits) {
+  for (const e of monEdits) {
     const secTitle = (sections.find((s) => s.id === e.sectionId) || {}).title || e.sectionId;
     if (!bySection.has(e.sectionId)) bySection.set(e.sectionId, { title: secTitle, roles: new Map() });
     const roles = bySection.get(e.sectionId).roles;

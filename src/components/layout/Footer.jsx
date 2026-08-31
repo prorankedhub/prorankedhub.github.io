@@ -12,7 +12,11 @@ export default function Footer({ tab, editMode, onEnterEdit }) {
         <span style={{ color: "var(--ink)" }}>Meta updated {META_DATE}</span>
       </div>
       <p style={{ margin: 0 }}>
-        Adapted from several Smogon SM OU threads, filtered for PRO availability — adjust the lists as the metagame shifts. Sprites from the PMD Sprites Repository (sprites.pmdcollab.org). Click a Pokémon to see every role it fills.
+        Sprites from the{" "}
+        <a href="https://sprites.pmdcollab.org/" target="_blank" rel="noreferrer">
+          PMD Sprites Repository
+        </a>
+        . Click a Pokémon to see every role it fills.
       </p>
       {showEditBtn && (
         <>

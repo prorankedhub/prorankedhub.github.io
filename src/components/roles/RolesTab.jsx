@@ -5,6 +5,9 @@ import { CategoryTopbarNav, CategoryRail } from "./CategoryNav.jsx";
 import RoleBlock from "./RoleBlock.jsx";
 import CopyToModal from "./CopyToModal.jsx";
 import SearchBox from "../shared/SearchBox.jsx";
+import SearchListModal from "../shared/SearchListModal.jsx";
+import AddSectionModal from "./AddSectionModal.jsx";
+import AddRoleModal from "./AddRoleModal.jsx";
 import { useScrollSpy } from "../../hooks/useScrollSpy.js";
 import { useDragAutoScroll } from "../../hooks/useDragAutoScroll.js";
 import { monName, monNote } from "../../lib/rolesLogic.js";
@@ -20,10 +23,24 @@ export default function RolesTab({ sections, roles, editMode, vr, urlFor, onOpen
   const [dropKey, setDropKey] = useState(null);
   const [dragPayload, setDragPayload] = useState(null); // { sectionId, roleName, name, note, isPendingAdd }
   const [copyPicker, setCopyPicker] = useState(null); // { name, note, fromSection, fromRole }
+  const [namePickerFor, setNamePickerFor] = useState(null); // roleKey, while choosing who to add
+  const [namePickerQ, setNamePickerQ] = useState("");
+  const [addSectionOpen, setAddSectionOpen] = useState(false);
+  const [addRoleFor, setAddRoleFor] = useState(null); // sectionId, while creating a role in it
   useDragAutoScroll(!!dragKey);
 
+  // Base sections + any staged this session — the source both the category
+  // nav (always shows every category) and the content view (filtered by
+  // search) build from.
+  const allSections = useMemo(() => {
+    const newSections = editMode
+      ? roles.pendingEdits.filter((e) => e.type === "addSection").map((e) => ({ id: e.sectionId, title: e.title, tag: e.tag, roles: [] }))
+      : [];
+    return [...sections, ...newSections];
+  }, [sections, roles.pendingEdits, editMode]);
+
   const spy = useScrollSpy(
-    sections.map((s) => s.id),
+    allSections.map((s) => s.id),
     "sec-",
   );
 
@@ -58,9 +75,12 @@ export default function RolesTab({ sections, roles, editMode, vr, urlFor, onOpen
 
   const view = useMemo(() => {
     let totalShown = 0;
-    const built = sections.map((s, i) => {
+    const built = allSections.map((s, i) => {
       let secHasMatch = false;
-      const roleBlocks = s.roles.map((r) => {
+      const newRoles = editMode
+        ? roles.pendingEdits.filter((e) => e.type === "addRole" && e.sectionId === s.id).map((e) => ({ name: e.roleName, move: e.move, mons: [] }))
+        : [];
+      const roleBlocks = [...s.roles, ...newRoles].map((r) => {
         const removeSet = editMode
           ? new Set(roles.pendingEdits.filter((e) => e.type === "remove" && e.sectionId === s.id && e.roleName === r.name).map((e) => e.name))
           : new Set();
@@ -103,9 +123,9 @@ export default function RolesTab({ sections, roles, editMode, vr, urlFor, onOpen
       return { section: s, num: String(i + 1).padStart(2, "0"), roleBlocks, hasMatch: secHasMatch };
     });
     return { sections: built.filter((s) => !query || s.hasMatch), totalShown };
-  }, [sections, roles.pendingEdits, editMode, query, vr, urlFor]);
+  }, [allSections, roles.pendingEdits, editMode, query, vr, urlFor]);
 
-  const cats = sections.map((s, i) => ({ id: s.id, num: String(i + 1).padStart(2, "0"), title: s.title }));
+  const cats = allSections.map((s, i) => ({ id: s.id, num: String(i + 1).padStart(2, "0"), title: s.title }));
   const totalMons = vr.rank.size;
   const statLine = query ? `${view.totalShown} found` : `${totalMons} Pokémon`;
 
@@ -186,7 +206,7 @@ export default function RolesTab({ sections, roles, editMode, vr, urlFor, onOpen
     <>
       <div className="topbar">
         <div className="topbar-row">
-          <CategoryTopbarNav cats={cats} activeCat={spy.active} onSelect={spy.scrollTo} />
+          <CategoryTopbarNav cats={cats} activeCat={spy.active} onSelect={spy.scrollTo} editMode={editMode} onAddSection={() => setAddSectionOpen(true)} />
           <SearchBox value={q} onChange={setQ} statLine={statLine} />
         </div>
       </div>
@@ -211,7 +231,7 @@ export default function RolesTab({ sections, roles, editMode, vr, urlFor, onOpen
       )}
 
       <div className="roles-wrap">
-        <CategoryRail cats={cats} activeCat={spy.active} onSelect={spy.scrollTo} />
+        <CategoryRail cats={cats} activeCat={spy.active} onSelect={spy.scrollTo} editMode={editMode} onAddSection={() => setAddSectionOpen(true)} />
         <div className="roles-content">
           {view.sections.map((s) => (
             <section key={s.section.id} id={"sec-" + s.section.id} style={{ padding: "30px 0 6px", scrollMarginTop: 68 }}>
@@ -246,12 +266,12 @@ export default function RolesTab({ sections, roles, editMode, vr, urlFor, onOpen
                   isAdding={editMode && addingKey === s.section.id + "|" + role.name}
                   addName={addName}
                   addNote={addNote}
-                  onAddNameChange={setAddName}
                   onAddNoteChange={setAddNote}
                   onAddConfirm={(sectionId, roleName) => {
                     roles.addMon(sectionId, roleName, addName, addNote);
                     setAddName("");
                     setAddNote("");
+                    setAddingKey(null);
                   }}
                   onAddCancel={() => {
                     setAddingKey(null);
@@ -259,12 +279,21 @@ export default function RolesTab({ sections, roles, editMode, vr, urlFor, onOpen
                     setAddNote("");
                   }}
                   onAddOpen={(roleKey) => {
-                    setAddingKey(roleKey);
-                    setAddName("");
-                    setAddNote("");
+                    setNamePickerFor(roleKey);
+                    setNamePickerQ("");
+                  }}
+                  onAddChangeName={(roleKey) => {
+                    setAddingKey(null);
+                    setNamePickerFor(roleKey);
+                    setNamePickerQ("");
                   }}
                 />
               ))}
+              {editMode && (
+                <button type="button" className="role-block__add-role" onClick={() => setAddRoleFor(s.section.id)}>
+                  + New role in {s.section.title}
+                </button>
+              )}
             </section>
           ))}
 
@@ -289,6 +318,58 @@ export default function RolesTab({ sections, roles, editMode, vr, urlFor, onOpen
           roleHasMon={roles.roleHasMon}
         />
       )}
+
+      {namePickerFor &&
+        (() => {
+          const sepAt = namePickerFor.indexOf("|");
+          const pickerSectionId = namePickerFor.slice(0, sepAt);
+          const pickerRoleName = namePickerFor.slice(sepAt + 1);
+          const pq = namePickerQ.trim().toLowerCase();
+          return (
+            <SearchListModal
+              title={`Add to ${pickerRoleName}`}
+              q={namePickerQ}
+              onQChange={setNamePickerQ}
+              onClose={() => setNamePickerFor(null)}
+              disabledLabel="already here"
+              items={vr.allMonNames
+                .filter((n) => !pq || n.toLowerCase().includes(pq))
+                .map((n) => ({
+                  name: n,
+                  url: urlFor(n),
+                  disabled: roles.roleHasMon(pickerSectionId, pickerRoleName, n),
+                  onClick: () => {
+                    setAddName(n);
+                    setAddNote("");
+                    setAddingKey(namePickerFor);
+                    setNamePickerFor(null);
+                  },
+                }))}
+            />
+          );
+        })()}
+
+      {addSectionOpen && (
+        <AddSectionModal
+          onAdd={(title) => roles.addSection(title)}
+          onClose={() => setAddSectionOpen(false)}
+        />
+      )}
+
+      {addRoleFor &&
+        (() => {
+          const sectionTitle =
+            sections.find((s) => s.id === addRoleFor)?.title ||
+            roles.pendingEdits.find((e) => e.type === "addSection" && e.sectionId === addRoleFor)?.title ||
+            addRoleFor;
+          return (
+            <AddRoleModal
+              sectionTitle={sectionTitle}
+              onAdd={(name, move) => roles.addRole(addRoleFor, name, move)}
+              onClose={() => setAddRoleFor(null)}
+            />
+          );
+        })()}
     </>
   );
 }

@@ -22,11 +22,11 @@ export default function RoleBlock({
   isAdding,
   addName,
   addNote,
-  onAddNameChange,
   onAddNoteChange,
   onAddConfirm,
   onAddCancel,
   onAddOpen,
+  onAddChangeName,
 }) {
   const roleKey = section.id + "|" + role.name;
   const isDrop = dropKey === roleKey;
@@ -124,21 +124,9 @@ export default function RoleBlock({
       {isAdding && (
         <div className="add-panel">
           <span className="add-panel__label">Add</span>
-          <input
-            list="mon-names"
-            value={addName}
-            onChange={(e) => onAddNameChange(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                onAddConfirm(section.id, role.name);
-              }
-              if (e.key === "Escape") onAddCancel();
-            }}
-            placeholder="Pokémon name"
-            spellCheck={false}
-            autoFocus
-          />
+          <button type="button" className="add-panel__name" onClick={() => onAddChangeName(roleKey)} title="Pick a different Pokémon">
+            {addName}
+          </button>
           <input
             value={addNote}
             onChange={(e) => onAddNoteChange(e.target.value)}
@@ -151,6 +139,7 @@ export default function RoleBlock({
             }}
             placeholder="Note (optional)"
             spellCheck={false}
+            autoFocus
           />
           <button className="add-panel__btn add-panel__btn--confirm" onClick={() => onAddConfirm(section.id, role.name)}>
             Add

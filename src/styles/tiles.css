@@ -96,6 +96,8 @@
 }
 .cat-row:hover { color: var(--ink); }
 .cat-row--active { border-left-color: var(--accent); color: var(--ink); }
+.cat-row--add { color: var(--green); font-weight: 700; margin-top: 6px; }
+.cat-row--add:hover { color: var(--green); filter: brightness(.85); }
 
 /* ---- drop target grid (role's mon list / VR tier's mon list) ---- */
 .mon-grid {

@@ -15,6 +15,14 @@
   text-transform: uppercase; letter-spacing: .08em; color: var(--accent);
 }
 
+.role-block__add-role {
+  display: block; margin: 4px 0 20px; padding: 8px 0; background: none; border: none;
+  border-bottom: 1.5px dashed var(--dash); color: var(--muted); cursor: pointer;
+  font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .04em; text-align: left; width: 100%;
+}
+.role-block__add-role:hover { color: var(--green); border-color: var(--green); }
+
 .sel-panel {
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 12px;
   background: var(--card); border: 1.5px solid var(--ink);
@@ -46,6 +54,12 @@
   background: var(--card); border: 1.5px solid var(--green);
 }
 .add-panel__label { font-family: 'Space Mono', monospace; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--green); }
+.add-panel__name {
+  min-width: 140px; background: var(--field); border: 1px dashed var(--green); padding: 7px 9px;
+  font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 13px; font-weight: 600; color: var(--ink);
+  text-align: left; cursor: pointer;
+}
+.add-panel__name:hover { border-style: solid; }
 .add-panel input {
   flex: 1; min-width: 140px; background: var(--field); border: 1px solid var(--line); padding: 7px 9px;
   font-family: 'Space Mono', monospace; font-size: 12px; outline: none;

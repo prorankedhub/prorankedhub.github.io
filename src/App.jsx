@@ -146,7 +146,7 @@ function Loaded({ dataModules }) {
   const editBarShown = editMode && (tab === "roles" || tab === "vr");
 
   return (
-    <div id="appShell" style={{ minHeight: "100vh", background: "var(--paper)", color: "var(--ink)", fontFamily: "'Space Grotesk', system-ui, sans-serif", paddingBottom: 40 }}>
+    <div id="appShell" style={{ minHeight: "100vh", background: "var(--paper)", color: "var(--ink)", fontFamily: "'Space Grotesk', system-ui, sans-serif", paddingBottom: editBarShown ? 96 : 40 }}>
       <datalist id="mon-names">
         {vr.allMonNames.map((n) => (
           <option key={n} value={n} />

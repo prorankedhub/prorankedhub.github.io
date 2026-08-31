@@ -3,6 +3,8 @@ import { useLocalStorage } from "./useLocalStorage.js";
 import {
   EDIT_STORAGE_KEY,
   addMon as addMonLib,
+  addRole as addRoleLib,
+  addSection as addSectionLib,
   copyToRole as copyToRoleLib,
   currentNote as currentNoteLib,
   data as dataLib,
@@ -84,6 +86,25 @@ export function useRoles(sections, editMode, canonicalize, showToast) {
     [sections, pendingEdits, setPendingEdits],
   );
 
+  const addSection = useCallback(
+    (title) => {
+      const { pendingEdits: next, toast, sectionId } = addSectionLib(sections, pendingEdits, title);
+      setPendingEdits(next);
+      if (toast) showToast(toast);
+      return sectionId;
+    },
+    [sections, pendingEdits, setPendingEdits, showToast],
+  );
+
+  const addRole = useCallback(
+    (sectionId, roleName, move) => {
+      const { pendingEdits: next, toast } = addRoleLib(sections, pendingEdits, sectionId, roleName, move);
+      setPendingEdits(next);
+      if (toast) showToast(toast);
+    },
+    [sections, pendingEdits, setPendingEdits, showToast],
+  );
+
   const discardAll = useCallback(() => clearPendingEdits(), [clearPendingEdits]);
 
   return {
@@ -98,6 +119,8 @@ export function useRoles(sections, editMode, canonicalize, showToast) {
     moveMon,
     copyToRole,
     setMonNote,
+    addSection,
+    addRole,
     discardAll,
   };
 }
