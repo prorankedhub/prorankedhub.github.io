@@ -1,126 +1,122 @@
-# PRO Role Compendium
+# PRO Ranked Hub
 
-A visual, interactive list of which Pokémon fill each role in the PRO OU metagame (Ranked queue). Search by Pokémon, filter by category, and click any sprite to open a panel showing every role that Pokémon appears in.
+Uma caixa de ferramentas visual e interativa para o metagame de PRO OU (fila Ranked): compêndio de roles, speed tiers, viability ranking e um team builder. Busca por Pokémon, filtro por categoria e um painel que mostra todos os papéis de um Pokémon ao clicar nele.
 
-Filtered down to what's actually available in PRO.
-
----
-
-## Files
-
-### The app — the 4 files that must travel together
-
-| File | What it is | Do you edit it? |
-|---|---|---|
-| `roles-data.js` | Every Pokémon, role and category. | **Yes — this one only.** |
-| `index.html` | The app. This is the filename GitHub Pages serves as the home page. | No |
-| `Role Compendium.dc.html` | A **byte-identical copy** of `index.html`. This is the source file the visual editor opens; `index.html` is the published copy. The two always hold the same content. | No |
-| `support.js` | The engine that makes the app run (tool-generated, don't edit). Without it the page loads blank. | No |
-
-> When moving, publishing or sharing, keep all four **in the same folder**. If you edit
-> `Role Compendium.dc.html`, copy it over `index.html` — otherwise the published site
-> falls behind.
-
-### Everything else
-
-| File | What it is |
-|---|---|
-| `README.md` | This guide. |
-| `CLAUDE.md` | Project context for the AI assistant. Does not affect the app. |
-| `.gitignore` | Tells git what to leave untracked. Does not affect the app. |
+Baseado no *SM OU Role Compendium* do Smogon, filtrado para a disponibilidade do PRO. Sprites do set Mystery Dungeon do Smogon (via SpriteCollab).
 
 ---
 
-## Running it
+## Stack
 
-Sprites are fetched from the internet, so you need a connection. The app loads its data as a JavaScript module, which **does not work if you just double-click the file** (`file://` blocks it for security reasons). Use one of these instead:
+Vite + React, sem TypeScript. Sem gerenciador de estado externo — o estado do app cabe em hooks simples (`src/hooks/`). Estilo em CSS puro, um arquivo por componente.
 
-### Locally (simple server)
-Open a terminal in the folder and run any of:
+```
+src/
+  data/     dados que você edita (roles, viability, regras de sprite)
+  lib/      lógica pura, sem estado — parsing, cálculo de speed, changelog...
+  hooks/    estado + efeitos colaterais (localStorage, fetch, tema...)
+  components/
+    layout/   header, tabs, footer
+    roles/    aba Role Compendium
+    speed/    aba Speed Tiers
+    vr/       aba Viability Ranking
+    team/     aba Team Builder
+    shared/   drawer de detalhe, modais, toast, export, print sheet
+  styles/   tokens globais (cores/tema/print) + tiles.css (estados dos cards)
+```
 
-- **Python:** `python -m http.server` → open `http://localhost:8000/`
-- **VS Code:** the *Live Server* extension → right-click `index.html` → *Open with Live Server*
-- **Node:** `npx serve`
-
-### On GitHub Pages
-1. Push `index.html`, `support.js` and `roles-data.js` (and, if you like, `Role Compendium.dc.html`) to the repository.
-2. Under **Settings → Pages**, point it at the branch/folder.
-3. Done — Pages serves over `https://`, so the app loads normally. Editing the data is just a commit to `roles-data.js`.
+`legacy-dc/` guarda o `.dc.html` original (gerado pelo editor visual **Claude Design**) como registro histórico — não é mais editado nem servido; o projeto React em `src/` é a fonte de verdade.
 
 ---
 
-## Editing the data (`roles-data.js`)
+## Como rodar
 
-Everything lives in two structures: `SECTIONS` (categories, roles and Pokémon) and `SPRITE_SLUGS` (only for forms whose sprite file is named differently).
+```bash
+npm install
+npm run dev       # servidor de desenvolvimento com hot-reload
+npm run build     # build de produção em dist/
+npm run preview   # serve o build de produção localmente, pra conferir antes do deploy
+```
 
-### Categories (tabs)
-Each block in `SECTIONS` becomes a tab, in the order it appears in the file:
+Os sprites e speeds vêm da internet (SpriteCollab e PokéAPI), então precisa de conexão.
+
+---
+
+## Deploy
+
+Automático: todo push na `main` roda `.github/workflows/deploy.yml`, que builda e publica em GitHub Pages via GitHub Actions (**Settings → Pages → Source: GitHub Actions**, configurado uma vez só). Não precisa subir a pasta `dist/` manualmente.
+
+O `vite.config.js` define `base: "/pro-role-compendium/"` (nome do repositório) — se o repositório for renomeado, atualize esse valor.
+
+---
+
+## Editando os dados (`src/data/roles-data.js`)
+
+Tudo fica em `SECTIONS` (categorias, papéis e Pokémon). Mudou de pasta em relação à versão anterior, mas o formato é o mesmo.
+
+### Categorias (tabs)
+Cada bloco em `SECTIONS` vira uma tab, na ordem em que aparece no arquivo:
 
 ```js
 { id: "hazards", title: "Entry Hazards", tag: "HAZARDS", roles: [ ... ] }
 ```
 
-- **Rename a tab** → change `title`.
-- **Reorder** → move the block (the `01`, `02`… numbering is automatic).
-- **New tab** → copy a whole block and give it a unique `id`, no spaces.
-- **Remove** → delete the block.
-- The **"All"** tab is generated automatically and always comes first.
+- **Renomear a tab** → mude o `title`.
+- **Reordenar** → mova o bloco de lugar (a numeração `01`, `02`… é automática).
+- **Nova tab** → copie um bloco inteiro e dê um `id` único, sem espaços.
+- **Remover** → apague o bloco.
+- A tab **"All"** é gerada automaticamente e sempre fica em primeiro.
 
-### Roles
-Inside `roles: [ ... ]`, each role looks like:
+### Papéis
+Dentro de `roles: [ ... ]`, cada papel é:
 
 ```js
 { name: "Stealth Rock", move: "Stealth Rock", mons: ["Landorus-Therian", "Heatran", ...] }
 ```
 
-- `name` — the role's title (shown on the card).
-- `move` — the label to the right of the title (the general move/mechanic). Use `""` for none.
-- `mons` — the list of Pokémon.
+- `name` — título do papel (aparece no card).
+- `move` — rótulo à direita do título (o move/mecânica geral). Deixe `""` para nenhum.
+- `mons` — a lista de Pokémon.
 
-To **create a role**, copy an entire `{ name, move, mons }` block.
+Para **criar um papel**, copie um bloco `{ name, move, mons }` inteiro.
 
 ### Pokémon
-In the `mons` list, each entry can be a plain name **or** an object with an annotation:
+Na lista `mons`, cada entrada pode ser um nome simples **ou** um objeto com anotação:
 
 ```js
 mons: [
-  "Ferrothorn",                                  // plain
-  { name: "Kleavor", note: "Stone Axe" },        // shows HOW it fills the role
+  "Ferrothorn",                                  // simples
+  { name: "Kleavor", note: "Stone Axe" },        // mostra COMO ele executa o papel
   { name: "Samurott-Hisui", note: "Ceaseless Edge" },
   "Skarmory"
 ]
 ```
 
-- Use the **English name** (`"Rotom-Wash"`, `"Mega Mawile"`, `"Landorus-Therian"`).
-- The `note` shows up in red under the sprite and in the detail panel (e.g. *Stealth Rock · Stone Axe*). Use it for the exceptions — when a Pokémon sets up or performs the role through one specific move or ability.
-- You can mix plain strings and objects in the same list.
+- Use o **nome em inglês** (`"Rotom-Wash"`, `"Mega Mawile"`, `"Landorus-Therian"`).
+- O `note` aparece em vermelho embaixo do sprite e no painel de detalhe (ex.: *Stealth Rock · Stone Axe*). Use-o para casos de exceção — quando o Pokémon setta/executa a função com um move ou ability específico.
+- Pode misturar strings e objetos na mesma lista.
+- **Só aparece na tela quem está em `src/data/viability-data.js`** (`VIABILITY`) — um nome numa role que não esteja lá é ignorado. Adicione-o a um tier de lá primeiro.
 
-### Syntax rules (don't break these)
-- Every `"name"` in quotes, commas between them, **no trailing comma** at the end of a list.
-- Objects use `{ name: "...", note: "..." }` with exactly those keys.
+### Regras de sintaxe (não quebre)
+- Cada `"nome"` entre aspas; vírgula entre eles; **sem vírgula sobrando** no fim da lista.
+- Objetos usam `{ name: "...", note: "..." }` com as chaves exatamente assim.
 
 ---
 
 ## Sprites
 
-The sprite is looked up automatically from the Pokémon's name. If one shows up as a **placeholder (⊘)**, that sprite's file is named differently — add a line to `SPRITE_SLUGS`:
+O sprite é buscado automaticamente a partir do nome do Pokémon (SpriteCollab, mesmo projeto PMD que a Smogon usa). Se algum aparecer como **placeholder (⊘)**, normalmente é uma forma alternativa (`Nome-Forma`) cujo sufixo o parser não reconhece — adicione o sufixo em `FORM_SUFFIXES` em `src/data/sprites.js`:
 
 ```js
-export const SPRITE_SLUGS = {
-  "Mega Mawile": "mawile-mega",
-  "Displayed name": "file-slug",
-  ...
-};
+export const FORM_SUFFIXES = ["Therian", "Alola", "Hisui", ...];
 ```
 
-Regular forms **don't** need an entry here. The image base URL lives in `SPRITE_BASE` at the end of the file — change it there if the sprite source ever moves.
+Espécies cujo hífen faz parte do nome (não separa uma forma, ex. `Porygon-Z`) entram em `NO_SPLIT_HYPHEN` no mesmo arquivo.
 
 ---
 
-## Recommended workflow
+## Fluxo recomendado
 
-1. Edit `roles-data.js` in any text editor (VS Code, Notepad++, etc.).
-2. Save.
-3. Reload the page (local server) or commit (GitHub Pages).
-
-No build step, no install.
+1. `npm run dev`, edite `src/data/roles-data.js` num editor de texto.
+2. Salve — o navegador atualiza sozinho (hot-reload).
+3. Confirme visualmente, depois `git commit` e `git push` — o deploy é automático.

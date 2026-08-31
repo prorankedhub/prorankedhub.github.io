@@ -1,0 +1,39 @@
+/* Shared by the Roles and VR tabs: sidebar rail + content column layout,
+   the "you're editing" legend bar, and the "nothing found" empty state. */
+.roles-wrap { display: flex; gap: 44px; align-items: flex-start; }
+.roles-content { flex: 1; min-width: 0; }
+
+/* .cat-rail itself only carries the responsive show/hide (see global.css's
+   @media (max-width: 860px) toggle with .cat-select) — it's reused by both
+   the topbar's plain flex spacer and the real sidebar nav below, which gets
+   its structural layout from .cat-rail__panel instead. */
+.cat-rail__panel {
+  position: sticky; top: 58px; width: 208px; flex-shrink: 0; padding: 34px 0 20px;
+  max-height: calc(100vh - 58px); overflow-y: auto;
+}
+.cat-rail__label {
+  font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px;
+}
+.cat-rail__num { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent); }
+
+.edit-legend {
+  max-width: 1180px; margin: 0 auto; padding: 14px 40px 0;
+}
+.edit-legend__inner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 18px; padding: 11px 16px;
+  background: var(--card); border: 1px solid var(--line); font-family: 'Space Mono', monospace;
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink2);
+}
+.edit-legend__title { font-weight: 700; color: var(--ink); }
+.edit-legend__item { display: flex; align-items: center; gap: 7px; }
+.edit-legend__swatch { width: 11px; height: 11px; display: inline-block; }
+.edit-legend__swatch--added { background: var(--green); }
+.edit-legend__swatch--removed { background: var(--accent); }
+.edit-legend__swatch--note { border: 1.5px solid var(--ink); }
+.edit-legend__spacer { flex: 1; }
+.edit-legend__hint { color: var(--muted); text-transform: none; letter-spacing: 0; }
+
+.roles-empty { padding: 90px 20px; text-align: center; }
+.roles-empty__title { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px; margin: 0 0 6px; letter-spacing: -.02em; }
+.roles-empty__sub { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--muted); margin: 0; }

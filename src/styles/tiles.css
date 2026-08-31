@@ -1,0 +1,122 @@
+/* =============================================================================
+   TILES — Pokémon tile states (base/added/removed/edited), badges, corner
+   buttons, chips/tabs/category rows, and viability-tier colors. Ported from
+   the original view-styles.js string builders into real CSS classes/modifiers
+   — the idiomatic way to express this in React (className, not inline style
+   strings). Components apply these as `className={cx("mon-tile", status && \`mon-tile--${status}\`)}`.
+   ========================================================================== */
+
+/* ---- mon tile (Roles + VR grids) ---- */
+.mon-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 72px;
+  padding: 9px 4px 8px;
+  cursor: pointer;
+  transition: transform .14s ease, border-color .14s, background .14s, opacity .18s;
+  font-family: inherit;
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+.mon-tile--added { background: var(--green-bg); border: 1.5px solid var(--green); }
+.mon-tile--removed { background: var(--red-bg); border: 1.5px solid var(--accent); opacity: .9; }
+.mon-tile--edited { background: var(--card); border: 1.5px solid var(--ink); }
+.mon-tile--dim { opacity: .16; pointer-events: none; }
+.mon-tile--selected { outline: 2.5px solid var(--ink); outline-offset: 2px; }
+.mon-tile--drag-source { opacity: .4; }
+
+.mon-tile:hover { transform: translateY(-3px); border-color: var(--accent); background: var(--field); }
+.mon-tile--added:hover { border-color: var(--green); }
+
+.mon-tile__name {
+  font-family: 'Space Mono', monospace; font-size: 8px; font-weight: 700;
+  letter-spacing: .03em; text-transform: uppercase; max-width: 64px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1;
+  color: var(--muted);
+}
+.mon-tile__name--removed { color: var(--accent); text-decoration: line-through; }
+
+.mon-tile__note {
+  font-family: 'Space Mono', monospace; font-size: 7.5px; font-weight: 700;
+  letter-spacing: .02em; text-transform: uppercase; max-width: 66px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1;
+  color: var(--accent);
+}
+.mon-tile__note--added { color: var(--green); }
+.mon-tile__note--removed { text-decoration: line-through; }
+
+/* ---- edit-mode badges (top-left corner label) ---- */
+.mon-badge {
+  position: absolute; top: -8px; left: -8px; padding: 1px 5px;
+  font-family: 'Space Mono', monospace; font-size: 7.5px; font-weight: 700;
+  letter-spacing: .06em; color: #fff; border: 1.5px solid var(--paper); line-height: 1.35;
+}
+.mon-badge--added { background: var(--green); }
+.mon-badge--removed { background: var(--accent); }
+.mon-badge--edited, .mon-badge--moved { background: var(--ink); }
+
+/* ---- edit-mode corner button (remove / undo-remove) ---- */
+.mon-corner {
+  position: absolute; top: -7px; right: -7px; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--accent); color: var(--paper); border: 1.5px solid var(--paper);
+  font-family: 'Space Mono', monospace; font-size: 10px; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; padding: 0;
+}
+.mon-corner:hover { filter: brightness(.88); }
+.mon-corner--undo { background: var(--green); }
+
+/* ---- category chips (roles-tab top filter) ---- */
+.chip {
+  font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 400;
+  letter-spacing: .04em; text-transform: uppercase; padding: 5px 1px;
+  background: none; border: none; border-bottom: 2px solid transparent;
+  cursor: pointer; transition: color .12s, border-color .12s; color: var(--muted);
+}
+.chip--active { font-weight: 700; border-bottom-color: var(--accent); color: var(--accent); }
+
+/* ---- top-level tabs (Role Compendium / Speed / Viability) ---- */
+.tab-btn {
+  font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700;
+  letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; line-height: 1;
+  padding: 11px 18px; cursor: pointer; transition: background .12s, color .12s, border-color .12s;
+  border: 1.5px solid var(--ink); background: transparent; color: var(--ink);
+}
+.tab-btn:hover { background: var(--sunk); }
+.tab-btn--active { background: var(--ink); color: var(--paper); }
+.tab-btn--active:hover { background: var(--ink); }
+
+/* ---- category rail rows (roles-tab sidebar) ---- */
+.cat-row {
+  display: block; padding: 6px 0 6px 12px; font-size: 13.5px; font-weight: 600;
+  letter-spacing: -.01em; cursor: pointer; border-left: 2px solid transparent;
+  color: var(--muted); transition: color .12s, border-color .12s;
+}
+.cat-row:hover { color: var(--ink); }
+.cat-row--active { border-left-color: var(--accent); color: var(--ink); }
+
+/* ---- drop target grid (role's mon list / VR tier's mon list) ---- */
+.mon-grid {
+  display: flex; flex-wrap: wrap; gap: 7px;
+  outline: 1.5px dashed transparent; outline-offset: 5px;
+  background: transparent; transition: background .12s, outline-color .12s;
+  padding: 2px;
+}
+.mon-grid--dragging { outline-color: var(--drop-hint); }
+.mon-grid--drop { outline-color: var(--accent); background: rgba(207,58,34,.05); }
+
+.mon-grid__add {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  width: 72px; height: 83px; background: transparent; border: 1.5px dashed var(--dash);
+  color: var(--muted); cursor: pointer; font-family: inherit; font-size: 22px; padding: 0;
+}
+.mon-grid__add:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---- viability tier letter color (S/A/B/C/NEW) ---- */
+.tier-color--s { color: var(--accent); }
+.tier-color--a { color: var(--ink); }
+.tier-color--b { color: var(--muted); }
+.tier-color--c { color: var(--tier-c); }
+.tier-color--new { color: var(--green); }

@@ -2,8 +2,8 @@
    ROLE COMPENDIUM — funções (roles) de cada Pokémon.
    -----------------------------------------------------------------------------
    Só SECTIONS mora aqui. Os outros dados foram separados por natureza:
-   • viability-data.js → VIABILITY (a lista-mestre de quem é viável)
-   • sprites.js        → SPRITE_BASE + SPRITE_SLUGS
+   • data/viability-data.js → VIABILITY (a lista-mestre de quem é viável)
+   • data/sprites.js        → SPRITE_API + FORM_SUFFIXES + NO_SPLIT_HYPHEN
 
    Velocidades não têm arquivo: são buscadas na PokéAPI a partir do roster.
 

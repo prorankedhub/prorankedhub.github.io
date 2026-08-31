@@ -1,0 +1,50 @@
+/* Confirm modal */
+.modal-scrim {
+  position: fixed; inset: 0; z-index: 60; background: var(--scrim-strong);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.modal {
+  width: 400px; max-width: 92vw; background: var(--paper); border: 1.5px solid var(--ink);
+  box-shadow: 0 30px 70px rgba(27,25,23,.3); animation: modalIn .16s ease;
+}
+.modal__body { padding: 24px 26px 18px; }
+.modal__title { margin: 0 0 11px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 21px; letter-spacing: -.02em; }
+.modal__text { margin: 0; font-size: 14px; line-height: 1.55; color: var(--ink2); }
+.modal__actions { display: flex; gap: 10px; justify-content: flex-end; padding: 4px 26px 24px; }
+.modal__btn {
+  padding: 9px 16px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em; cursor: pointer;
+}
+.modal__btn--cancel { background: none; border: 1.5px solid var(--rule); color: var(--ink2); }
+.modal__btn--cancel:hover { border-color: var(--ink); color: var(--ink); }
+.modal__btn--confirm { border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); }
+.modal__btn--confirm:hover { filter: brightness(.9); }
+.modal__btn--danger { border-color: var(--accent); background: var(--accent); }
+
+/* Toast */
+.toast {
+  position: fixed; left: 50%; bottom: 78px; z-index: 61; background: var(--ink); color: var(--paper);
+  padding: 11px 18px; font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: .03em;
+  box-shadow: 0 14px 34px rgba(27,25,23,.32); animation: toastIn .18s ease; transform: translateX(-50%);
+}
+
+/* Edit banner (bottom bar shown whenever there's a pending edit) */
+.edit-banner {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+  background: var(--accent); color: var(--paper); border-top: 1.5px solid var(--ink);
+}
+.edit-banner__row {
+  max-width: 1180px; margin: 0 auto; padding: 11px 40px; display: flex; align-items: center; gap: 14px;
+  font-family: 'Space Mono', monospace; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase;
+}
+.edit-banner__sep { width: 1px; height: 13px; background: rgba(241,236,225,.5); }
+.edit-banner__note { text-transform: none; letter-spacing: .02em; opacity: .85; }
+.edit-banner__spacer { flex: 1; }
+.edit-banner__btn {
+  background: none; border: 1.5px solid var(--paper); color: var(--paper); padding: 6px 14px;
+  font-family: inherit; font-size: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer;
+}
+.edit-banner__btn:hover { background: var(--paper); color: var(--accent); }
+.edit-banner__btn--solid { background: var(--ink); border-color: var(--ink); }
+.edit-banner__btn--solid:hover { background: var(--paper); color: var(--ink); }
+.edit-banner__btn--exit { border-color: var(--on-accent-soft); }
