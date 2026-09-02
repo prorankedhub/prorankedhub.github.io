@@ -9,6 +9,12 @@
 import { esc, printGroups } from "./changelog.js";
 
 export function proxUrl(url) {
+  // The placeholder is a data: URI (unresolved/missing sprite) — weserv
+  // can't fetch that as a remote image and silently falls back to its own
+  // generic "not found" image (HTTP 200, so callers can't tell it failed),
+  // which made every unresolved sprite in an export look identical. Data
+  // URIs render fine directly in an <img>, no proxy/CORS needed.
+  if (url.startsWith("data:")) return url;
   return "https://images.weserv.nl/?url=" + encodeURIComponent(url.replace(/^https?:\/\//, ""));
 }
 
