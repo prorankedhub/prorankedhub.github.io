@@ -69,7 +69,17 @@ export function useExport({ tab, sections, pendingEdits, vr, vrDraft, inRoster, 
         imgs.map((img) => (img.complete && img.naturalWidth ? Promise.resolve() : new Promise((r) => { img.onload = img.onerror = r; }))),
       );
       await new Promise((r) => setTimeout(r, 120));
-      const dataUrl = await htmlToImage.toPng(host.firstElementChild, { pixelRatio: 2, backgroundColor: "#f1ece1" });
+      // includeQueryParams is required, not cosmetic: html-to-image keeps a
+      // module-level cache of fetched resources whose key drops the query
+      // string by default. Every sprite here is the same proxy origin with a
+      // different ?url=, so they all collapsed onto one cache entry — the
+      // first export populated it, and every export after that rendered the
+      // whole poster with whichever sprite resolved last.
+      const dataUrl = await htmlToImage.toPng(host.firstElementChild, {
+        pixelRatio: 2,
+        backgroundColor: "#f1ece1",
+        includeQueryParams: true,
+      });
       const today = new Date();
       const dateStamp = [today.getFullYear(), String(today.getMonth() + 1).padStart(2, "0"), String(today.getDate()).padStart(2, "0")].join("-");
       const a = document.createElement("a");
