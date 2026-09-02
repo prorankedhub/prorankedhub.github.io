@@ -26,7 +26,7 @@ Vite + React, plain JavaScript (no TypeScript), no external state management lib
 - **PRO availability:** there are NO Tapus, no Magearna and no Ultra Beasts (except **Blacephalon**). Don't reintroduce them. When touching lists, respect what actually exists in PRO.
 - **Keep the editorial look** (beige paper `#f1ece1`, ink, brick red `#cf3a22`; Bricolage Grotesque / Space Grotesk / Space Mono). The user tried a retro version and rejected it. Don't redesign unprompted.
 - Everything written in this repo — UI, docs, code comments, commit messages — is in **English**. Conversation with the user stays in Portuguese.
-- `vite.config.js`'s `base: "/pro-role-compendium/"` must match the GitHub repo name — update it together if the repo is ever renamed.
+- `vite.config.js`'s `base: "/pro-ranked-hub/"` must match the GitHub repo name — update it together if the repo is ever renamed.
 
 ## Data format (`src/data/roles-data.js`)
 - `SECTIONS`: array of `{ id, title, tag, roles: [...] }` — each block is a tab (order = on-screen order; "All" is automatic).

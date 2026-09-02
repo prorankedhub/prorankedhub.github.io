@@ -46,7 +46,7 @@ Sprites and speeds come from the internet (SpriteCollab and PokéAPI), so you'll
 
 Automatic: every push to `main` runs `.github/workflows/deploy.yml`, which builds and publishes to GitHub Pages via GitHub Actions (**Settings → Pages → Source: GitHub Actions**, a one-time setup). No need to manually upload the `dist/` folder.
 
-`vite.config.js` sets `base: "/pro-role-compendium/"` (the repo name) — update that value if the repo is ever renamed.
+`vite.config.js` sets `base: "/pro-ranked-hub/"` (the repo name) — update that value if the repo is ever renamed.
 
 ---
 
