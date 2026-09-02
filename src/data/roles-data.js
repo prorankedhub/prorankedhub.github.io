@@ -1,23 +1,23 @@
 /* =============================================================================
-   ROLE COMPENDIUM — funções (roles) de cada Pokémon.
+   ROLE COMPENDIUM — the roles each Pokémon fills.
    -----------------------------------------------------------------------------
-   Só SECTIONS mora aqui. Os outros dados foram separados por natureza:
-   • data/viability-data.js → VIABILITY (a lista-mestre de quem é viável)
-   • data/sprites.js        → SPRITE_API + FORM_SUFFIXES + NO_SPLIT_HYPHEN
+   Only SECTIONS lives here. The rest of the data is split up by nature:
+   • data/viability-data.js → VIABILITY (the master list of who is viable)
+   • data/sprites.js        → FORM_SUFFIXES + NO_SPLIT_HYPHEN
 
-   Velocidades não têm arquivo: são buscadas na PokéAPI a partir do roster.
+   Speeds have no file: they're fetched from PokéAPI based on the roster.
 
-   Importante: o site só mostra Pokémon que estão no VIABILITY. Um nome numa
-   role que não esteja no ranking é ignorado — adicione-o a um tier em
-   viability-data.js para ele aparecer. Dentro de cada role, a ordem na tela
-   segue o ranking do VR.
+   Important: the site only shows Pokémon that are in VIABILITY. A name in a
+   role that isn't in the ranking is ignored — add it to a tier in
+   viability-data.js for it to show up. Within a role, on-screen order
+   follows the VR ranking.
 
-   Como editar uma role:
-   • Adicionar/remover → edite a lista "mons: [...]" (nomes em inglês, aspas).
-   • Mostrar COMO (move/ability) → troque o nome por { name: "X", note: "Move" }.
-   • Nova função → copie um bloco { name, move, mons }.
-   • Nova categoria → copie um bloco { id, title, tag, roles: [...] } (id único).
-   • Reordenar categorias/roles → mova os blocos (a ordem aqui é a da página).
+   How to edit a role:
+   • Add/remove → edit the "mons: [...]" list (English names, quoted).
+   • Show HOW (move/ability) → swap the name for { name: "X", note: "Move" }.
+   • New role → copy a { name, move, mons } block.
+   • New category → copy an { id, title, tag, roles: [...] } block (unique id).
+   • Reorder categories/roles → move the blocks (order here is page order).
    ========================================================================== */
 
 export const SECTIONS = [

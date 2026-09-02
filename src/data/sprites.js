@@ -1,18 +1,21 @@
 /* =============================================================================
-   SPRITES — utilitário compartilhado por todas as abas.
-   Os retratos vêm em runtime do PMD Sprites Repository (sprites.pmdcollab.org),
-   via a API pública do SpriteCollab, e ficam em cache no navegador — igual às
-   velocidades. Nenhum mapeamento de nome→arquivo aqui: o parser de nomes é
-   genérico. Só o que não cabe num parser genérico mora nestas duas listas.
+   SPRITES — a utility shared by every tab.
+   Portraits are fetched at runtime from the PMD Sprites Repository
+   (sprites.pmdcollab.org) via SpriteCollab's public API, and cached in the
+   browser — same as speeds. No name→file mapping here: the name parser is
+   generic. Only what a generic parser can't handle lives in these two lists.
+
+   The endpoint itself is not here: it's SPRITE_API in lib/spriteResolve.js,
+   next to the code that calls it. These two lists are data because they're
+   edited as the roster grows; the URL is not.
    ========================================================================== */
 
-export const SPRITE_API = "https://spriteserver.pmdcollab.org/graphql";
-
-// Sufixo depois de um hífen que indica FORMA alternativa (ex.: "Landorus-Therian"
-// -> busca "Landorus", pede a forma "Therian"). Se o sufixo não estiver aqui, o
-// nome inteiro é tratado como uma espécie só (ver NO_SPLIT_HYPHEN abaixo).
+// A suffix after a hyphen marking an alternate FORM (e.g. "Landorus-Therian"
+// -> searches "Landorus", asks for the "Therian" form). If the suffix isn't
+// listed here, the whole name is treated as a single species (see
+// NO_SPLIT_HYPHEN below).
 export const FORM_SUFFIXES = ["Therian", "Alola", "Hisui", "Wash", "Unbound", "Black", "White", "Galar", "Paldea"];
 
-// Espécies cujo hífen faz parte do nome, não separa uma forma (ex.: "Porygon-Z").
-// Pra essas, buscamos o nome sem o hífen.
+// Species whose hyphen is part of the name rather than separating a form
+// (e.g. "Porygon-Z"). For those, we search the name without the hyphen.
 export const NO_SPLIT_HYPHEN = ["Kommo-o", "Porygon-Z"];

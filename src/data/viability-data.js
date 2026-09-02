@@ -1,16 +1,16 @@
 /* =============================================================================
-   VIABILITY — LISTA-MESTRE do PRO OU (fila Ranked).
+   VIABILITY — the MASTER LIST for PRO OU (Ranked queue).
    -----------------------------------------------------------------------------
-   Esta é a fonte da verdade de QUEM é viável. Só Pokémon listados aqui
-   aparecem no site — nas abas Roles, Speed Tiers e Team Builder. Um Pokémon
-   considerado inviável simplesmente não entra em lugar nenhum até alguém
-   colocá-lo num tier aqui. Isso mantém o debate onde importa: ele MERECE
-   estar no ranking, e em que tier?
+   This is the source of truth for WHO is viable. Only Pokémon listed here
+   show up on the site — in the Roles, Speed Tiers and Team Builder tabs. A
+   Pokémon considered unviable simply doesn't appear anywhere until someone
+   puts it in a tier here. That keeps the debate where it matters: does it
+   DESERVE a spot in the ranking, and in which tier?
 
-   Ordem = ordem na tela (topo → fundo). Cada bloco é um tier; "mons" é a
-   lista de nomes (em inglês). Para re-rankear, mova o nome entre as listas.
-   A ordem dentro do tier também vale como ordenação (o Role Compendium usa
-   o VR pra ordenar os Pokémon dentro de cada função).
+   Order = on-screen order (top → bottom). Each block is a tier; "mons" is
+   the list of names (in English). To re-rank, move the name between lists.
+   Order within a tier counts as ordering too (the Role Compendium uses the
+   VR to sort Pokémon within each role).
    ========================================================================== */
 
 export const VIABILITY = [
