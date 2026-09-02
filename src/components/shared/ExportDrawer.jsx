@@ -1,21 +1,8 @@
 import "./ExportDrawer.css";
 
-export default function ExportDrawer({ open, onClose, tab, hasRoleChanges, hasVrChanges, pendingLabel, printSummary, exportApi }) {
+export default function ExportDrawer({ open, onClose, tab, pendingLabel, printSummary, exportApi }) {
   if (!open) return null;
   const isVr = tab === "vr";
-  // Step 1 follows what's actually staged, not the active tab: you can stage
-  // role edits and open this from the VR tab (or the reverse), and either way
-  // the file you need to copy has to be reachable.
-  const rolesBtn = hasRoleChanges && (
-    <button key="roles" className="export-btn export-btn--accent" onClick={exportApi.copyFileClick}>
-      Copy roles-data.js
-    </button>
-  );
-  const vrBtn = hasVrChanges && (
-    <button key="vr" className="export-btn export-btn--ink" onClick={exportApi.copyVrFileClick}>
-      Copy viability-data.js
-    </button>
-  );
   const shareBlurb = isVr
     ? "Download a clean image of the full tier list — with your changes baked in — to drop into Discord or the forums, or copy it as a text list."
     : "Download a shareable image of what changed — drop it into Discord or the forums — or copy it as a plain text list.";
@@ -41,7 +28,18 @@ export default function ExportDrawer({ open, onClose, tab, hasRoleChanges, hasVr
             <p>
               Copy the file below, paste it over the file in the repo and commit. Role edits live in <b>roles-data.js</b>; tier changes live in <b>viability-data.js</b>.
             </p>
-            <div className="export-step__actions">{isVr ? [vrBtn, rolesBtn] : [rolesBtn, vrBtn]}</div>
+            <div className="export-step__actions">
+              {!isVr && (
+                <button className="export-btn export-btn--accent" onClick={exportApi.copyFileClick}>
+                  Copy roles-data.js
+                </button>
+              )}
+              {isVr && (
+                <button className="export-btn export-btn--ink" onClick={exportApi.copyVrFileClick}>
+                  Copy viability-data.js
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="export-step">

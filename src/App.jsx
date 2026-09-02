@@ -75,43 +75,22 @@ function Loaded({ dataModules }) {
   });
 
   const c = changeCounts(roleState.pendingEdits);
-  const rolesPending = roleState.pendingEdits.length;
-  // The banner is scoped to the tab you're editing ("Editing roles" /
-  // "Editing viability"), so its count stays scoped too.
-  const scopedPending = tab === "vr" ? vr.changeCount : rolesPending;
-
-  // Review is cross-scope in BOTH directions. Cutting a mon in Viability
-  // Ranking prunes it from every role on export (see useExport.js), so it's a
-  // reason to re-copy roles-data.js; and role edits stay staged while you're
-  // on the VR tab, so hiding Review there only makes them look lost. The gate
-  // is vr.dirty, not vr.changeCount, because reordering mons within a tier
-  // changes viability-data.js without changing any mon's tier.
-  const hasRoleChanges = rolesPending > 0 || vr.dirty;
-  const hasVrChanges = vr.dirty;
-  const canExport = hasRoleChanges || hasVrChanges;
-
-  const drawerPending = rolesPending + vr.changeCount;
-  const drawerLabel =
-    drawerPending > 0
-      ? `${drawerPending} pending change${drawerPending === 1 ? "" : "s"}`
-      : vr.dirty
-        ? "Tier order changed"
-        : "No changes yet";
-
+  const scopedPending = tab === "vr" ? vr.changeCount : roleState.pendingEdits.length;
+  const pendingLabel = scopedPending === 0 ? "No changes yet" : `${scopedPending} pending change${scopedPending === 1 ? "" : "s"}`;
+  // Exporting roles-data.js is worthwhile even with zero role edits: cutting
+  // a mon from Viability Ranking already prunes it out of every role on
+  // export (see useExport.js), so that alone is a reason to re-copy the file.
+  const canExport = tab === "vr" ? vr.changeCount > 0 : roleState.pendingEdits.length > 0 || vr.dirty;
   const printSummary =
     tab === "vr"
-      ? vr.changeCount > 0
-        ? `${vr.changeCount} tier change${vr.changeCount === 1 ? "" : "s"}`
-        : rolesPending > 0
-          ? "No tier changes — but role edits are staged, so this export will reflect that."
-          : vr.dirty
-            ? "Tier order changed."
-            : "Nothing staged yet."
-      : rolesPending > 0
-        ? `${c.add} added · ${c.remove} removed · ${c.note} note ${c.note === 1 ? "change" : "changes"}`
-        : vr.dirty
+      ? vr.changeCount === 0
+        ? "Nothing staged yet."
+        : `${vr.changeCount} tier change${vr.changeCount === 1 ? "" : "s"}`
+      : scopedPending === 0
+        ? vr.dirty
           ? "No role edits — but Viability Ranking changed, so this export will reflect that."
-          : "Nothing staged yet.";
+          : "Nothing staged yet."
+        : `${c.add} added · ${c.remove} removed · ${c.note} note ${c.note === 1 ? "change" : "changes"}`;
 
   const openMon = (name) => setSelected(name);
   const closeDetail = () => setSelected(null);
@@ -213,16 +192,7 @@ function Loaded({ dataModules }) {
         />
       )}
 
-      <ExportDrawer
-        open={exportOpen}
-        onClose={() => setExportOpen(false)}
-        tab={tab}
-        hasRoleChanges={hasRoleChanges}
-        hasVrChanges={hasVrChanges}
-        pendingLabel={drawerLabel}
-        printSummary={printSummary}
-        exportApi={exportApi}
-      />
+      <ExportDrawer open={exportOpen} onClose={() => setExportOpen(false)} tab={tab} pendingLabel={pendingLabel} printSummary={printSummary} exportApi={exportApi} />
 
       <ConfirmModal modal={modal} onClose={closeModal} />
       <Toast message={toast} />

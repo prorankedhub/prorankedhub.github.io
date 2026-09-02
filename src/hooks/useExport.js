@@ -13,11 +13,8 @@ import { shareCardHTML } from "../lib/exportCard.js";
 // static asset. Vite doesn't serve src/ files as-is in production, so the
 // splice-and-copy feature needs the text baked in instead of fetched.
 export function useExport({ tab, sections, pendingEdits, vr, vrDraft, inRoster, urlFor, discardAll, discardVrDraft, confirmModal, showToast }) {
-  // "all" (neither "roles" nor "vr") makes buildChangelog list both scopes.
-  // The drawer reviews everything staged regardless of the active tab, so the
-  // preview and the copied text list have to cover both — only the exported
-  // image stays tab-shaped, since the two posters are genuinely different.
-  const changelog = buildChangelog("all", { sections, pendingEdits, vr, vrDraft });
+  const scope = tab === "vr" ? "vr" : "roles";
+  const changelog = buildChangelog(scope, { sections, pendingEdits, vr, vrDraft });
   const printGroups = printGroupsLib(pendingEdits, sections, urlFor);
 
   const clearStaged = useCallback(() => {
